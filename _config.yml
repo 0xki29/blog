@@ -1,0 +1,49 @@
+# ===============================
+#   Site Configuration
+# ===============================
+title: Hacker-Blog
+description: "A Jekyll Blog Theme For Hackers"
+author:
+  name: "0xki29"
+  url: "https://0xki29.github.io"
+
+# URL settings
+url: "https://0xki29.github.io"   
+baseurl: ""                        
+
+# Directory settings
+source: .
+destination: ./_site
+
+# Permalink & pagination
+permalink: /:title
+paginate: 3
+paginate_path: /page/:num/
+
+defaults:
+  -
+    scope:
+      path: ""
+      type: "posts"
+    values:
+      layout: "post"
+
+future: true
+
+plugins:
+  - jekyll-seo-tag
+  - jekyll-paginate
+  - jekyll-sitemap
+
+# ===============================
+#   Custom Variables
+# ===============================
+owner: "0xki29"
+year: "2025"
+
+# ===============================
+# ===============================
+social_links:
+  github: "https://github.com/0xki29"
+  linkedin: ""
+  twitter: ""
