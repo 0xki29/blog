@@ -9,7 +9,7 @@ author:
 
 # URL settings
 url: "https://0xki29.github.io"   
-baseurl: ""                        
+baseurl: "/blog"
 
 # Directory settings
 source: .
