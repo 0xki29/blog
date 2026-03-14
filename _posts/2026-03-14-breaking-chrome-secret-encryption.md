@@ -115,11 +115,12 @@ v20 | nonce | ciphertext | tag
 ```
 Component breakdown:
 
-Component	Description
-v20	Encryption version identifier
-nonce	12-byte random initialization vector
-ciphertext	Encrypted secret
-tag	16-byte authentication tag
+| Component | Description |
+|------|---------|
+| `v20` | Encryption version identifier |
+| `nonce` | 12-byte random initialization vector |
+| `ciphertext` | Encrypted secret |
+| `tag` | 16-byte authentication tag |
 
 Chrome uses AES-256-GCM for encryption. AES-GCM provides two critical properties:
 Confidentiality – the secret cannot be read without the key
