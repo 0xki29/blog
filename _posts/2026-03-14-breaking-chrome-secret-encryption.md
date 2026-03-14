@@ -60,7 +60,7 @@ Location:
 ```
 The file is a JSON document containing browser configuration data. Inside this file, Chrome stores an entry called:
 
-os_crypt.encrypted_key
+os_crypt.app_bound_encrypted_key
 
 ```json
 Example:
@@ -85,23 +85,17 @@ When Chrome starts, it calls CryptUnprotectData() to recover the original key
 
 Simplified flow:
 ```bash
-AES Master Key
-      │
-      ▼
-DPAPI Encrypt
-      │
-      ▼
+AppBoundKey
+   ↓
+AES-GCM encrypted
+   ↓
+AES key protected by ChromeKey1
+   ↓
+DPAPI USER
+   ↓
+DPAPI SYSTEM
+   ↓
 Stored in Local State
-
-When Chrome needs to decrypt secrets:
-
-Encrypted Key (Local State)
-        │
-        ▼
-CryptUnprotectData()
-        │
-        ▼
-Recovered AES Key
 ```
 
 
@@ -126,10 +120,10 @@ Chrome uses AES-256-GCM for encryption. AES-GCM provides two critical properties
 Confidentiality – the secret cannot be read without the key
 Integrity – any modification to the ciphertext causes decryption to fail
 To decrypt a secret, the following inputs are required:
-
-+ AES master key
-+ nonce
-+ ciphertext
-+ authentication tag
-
+```php
+SQLite → extract encrypted_value
+Local State → extract encrypted_key
+DPAPI → recover AES key
+AES-GCM → decrypt secret
+```
 Once these values are extracted, the secret can be decrypted using a standard AES-GCM implementation.
