@@ -58,9 +58,7 @@ Location:
 ```php
 %USERPROFILE%\AppData\Local\Google\Chrome\User Data\Local State
 ```
-The file is a JSON document containing browser configuration data.
-
-Inside this file, Chrome stores an entry called:
+The file is a JSON document containing browser configuration data. Inside this file, Chrome stores an entry called:
 
 os_crypt.encrypted_key
 
@@ -73,27 +71,16 @@ Example:
 ```
 
 This value is:
-
 Base64 encoded
-
 Protected using Windows DPAPI
-
 Before Chrome can decrypt cookies or passwords, it must first recover this master key.
-
 Windows DPAPI Protection
-
 Chrome relies on the Windows Data Protection API (DPAPI) to protect the master key.
-
 DPAPI is a Windows cryptographic service designed to protect sensitive data tied to a specific user account.
-
 The protection workflow looks like this:
-
 Chrome generates a random AES-256 key
-
 The key is encrypted using DPAPI
-
 The encrypted key is stored in Local State
-
 When Chrome starts, it calls CryptUnprotectData() to recover the original key
 
 Simplified flow:
@@ -119,12 +106,8 @@ Recovered AES Key
 
 
 Because DPAPI ties encryption to the current Windows user, the key can only be decrypted by processes running under the same user context.
-
 However, malware running on the victim's machine automatically inherits this context, allowing it to recover the key as well.
-
-Chrome Encrypted Secret Format
-
-After recovering the AES key, Chrome can decrypt secrets stored in the SQLite databases.
+Chrome Encrypted Secret Format. After recovering the AES key, Chrome can decrypt secrets stored in the SQLite databases.
 
 Modern Chrome versions store encrypted secrets using the following structure:
 ```php
@@ -138,22 +121,14 @@ nonce	12-byte random initialization vector
 ciphertext	Encrypted secret
 tag	16-byte authentication tag
 
-Chrome uses AES-256-GCM for encryption.
-
-AES-GCM provides two critical properties:
-
+Chrome uses AES-256-GCM for encryption. AES-GCM provides two critical properties:
 Confidentiality – the secret cannot be read without the key
-
 Integrity – any modification to the ciphertext causes decryption to fail
-
 To decrypt a secret, the following inputs are required:
 
-AES master key
-
-nonce
-
-ciphertext
-
-authentication tag
+- AES master key
+- nonce
+- ciphertext
+- authentication tag
 
 Once these values are extracted, the secret can be decrypted using a standard AES-GCM implementation.
