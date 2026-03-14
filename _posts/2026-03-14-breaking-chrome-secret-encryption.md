@@ -127,9 +127,9 @@ Confidentiality – the secret cannot be read without the key
 Integrity – any modification to the ciphertext causes decryption to fail
 To decrypt a secret, the following inputs are required:
 
-* AES master key
-* nonce
-* ciphertext
-* authentication tag
++ AES master key
++ nonce
++ ciphertext
++ authentication tag
 
 Once these values are extracted, the secret can be decrypted using a standard AES-GCM implementation.
