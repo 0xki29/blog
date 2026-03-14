@@ -1,6 +1,6 @@
 ---
 layout: post
-title: "Breaking Chrome Secret Encryption (DPAPI + AES-GCM)"
+title: "Breaking Chrome Secret Encryption on Windows (DPAPI + AES-GCM)"
 date: 2026-03-14 10:00:00 +0700
 categories: [Security, Malware, Windows]
 ---
@@ -66,7 +66,7 @@ os_crypt.app_bound_encrypted_key
 Example:
 
 "os_crypt": {
-  "encrypted_key": "RFBBUEkAAAA..."
+  "app_bound_encrypted_key": "APPB..."
 }
 ```
 
@@ -122,7 +122,7 @@ Integrity – any modification to the ciphertext causes decryption to fail
 To decrypt a secret, the following inputs are required:
 ```php
 SQLite → extract encrypted_value
-Local State → extract encrypted_key
+Local State → extract app_bound_encrypted_key
 DPAPI → recover AES key
 AES-GCM → decrypt secret
 ```
