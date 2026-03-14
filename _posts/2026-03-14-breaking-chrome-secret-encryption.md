@@ -55,9 +55,9 @@ While Chrome stores encrypted secrets inside SQLite databases, the actual encryp
 Instead, Chrome generates a master encryption key and stores it inside the Local State configuration file.
 
 Location:
-
+```php
 %USERPROFILE%\AppData\Local\Google\Chrome\User Data\Local State
-
+```
 The file is a JSON document containing browser configuration data.
 
 Inside this file, Chrome stores an entry called:
@@ -97,7 +97,7 @@ The encrypted key is stored in Local State
 When Chrome starts, it calls CryptUnprotectData() to recover the original key
 
 Simplified flow:
-
+```bash
 AES Master Key
       │
       ▼
@@ -115,6 +115,8 @@ CryptUnprotectData()
         │
         ▼
 Recovered AES Key
+```
+
 
 Because DPAPI ties encryption to the current Windows user, the key can only be decrypted by processes running under the same user context.
 
