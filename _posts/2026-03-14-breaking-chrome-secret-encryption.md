@@ -15,6 +15,37 @@ However, many information-stealing malware families are still able to extract an
 
 In this article, we will analyze how Chrome protects its secrets and demonstrate how the encryption can be reversed to steal stored credentials.
 
-## Step 1 — Extract AppBoundKey
+## Chrome Secret Encryption Mechanism on Windows
 
-Key AES được lưu trong file:
+Chrome Secret Encryption on Windows
+
+On Windows systems, Google Chrome does not store sensitive data such as cookies and passwords in plaintext. Instead, it uses a layered protection mechanism that combines SQLite storage, AES encryption, and Windows DPAPI.
+
+Understanding this mechanism is essential to see why credential stealing malware is still able to steal user secrets.
+
+1. Where Chrome Stores Sensitive Data
+
+Chrome stores user data inside the user profile directory:
+
+%USERPROFILE%\AppData\Local\Google\Chrome\User Data\Default\
+
+Several SQLite databases contain sensitive information:
+
+| File | Content |
+|------|---------|
+| `Login Data` | Saved website passwords |
+| `Cookies` | HTTP cookies and session tokens |
+| `Web Data` | Autofill information |
+| `History` | Browsing history |
+
+Although these databases can be opened with any SQLite viewer, the sensitive fields are encrypted.
+
+For example:
+
+logins.password_value
+
+cookies.encrypted_value
+
+These values contain encrypted blobs instead of plaintext credentials.
+
+
