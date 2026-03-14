@@ -127,9 +127,9 @@ Chrome Encrypted Secret Format
 After recovering the AES key, Chrome can decrypt secrets stored in the SQLite databases.
 
 Modern Chrome versions store encrypted secrets using the following structure:
-
+```php
 v20 | nonce | ciphertext | tag
-
+```
 Component breakdown:
 
 Component	Description
