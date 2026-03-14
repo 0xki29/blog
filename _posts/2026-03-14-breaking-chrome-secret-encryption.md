@@ -7,9 +7,13 @@ categories: [Security, Malware, Windows]
 
 ## Background
 
-Google Chrome không lưu password plaintext.
+Google Chrome stores sensitive data such as passwords, cookies, and session tokens. To protect this information, Chrome encrypts secrets using **AES-256-GCM**, while the encryption key itself is protected by **Windows DPAPI**.
 
-Secrets được encrypt bằng **AES-256-GCM** và key AES được bảo vệ bằng **DPAPI**.
+This layered design is intended to prevent other applications from accessing user secrets.
+
+However, many information-stealing malware families are still able to extract and decrypt this data in seconds.
+
+In this article, we will analyze how Chrome protects its secrets and demonstrate how the encryption can be reversed to steal stored credentials.
 
 ## Step 1 — Extract AppBoundKey
 
