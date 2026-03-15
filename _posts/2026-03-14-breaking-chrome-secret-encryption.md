@@ -21,88 +21,61 @@ The Story of Chrome and the Secret Treasure:
 
 One day, Google Chrome had to keep some very important secrets:
 
-your website passwords
++ Your website passwords
 
-your login cookies
++ Your login cookies
 
-Chrome wrote these secrets inside a notebook called SQLite.
+Chrome wrote these secrets inside a notebook called SQLite. But Chrome knew something important:
 
-But Chrome knew something important:
-
-“If someone steals my notebook, they must NOT read the secrets!”
-
-So Chrome built many layers of protection.
+“If someone steals my notebook, they must NOT read the secrets!”. So Chrome built many layers of protection.
 
 Step 1 — Hide the secret with magic scrambling
 
 Before writing the password in the notebook, Chrome scrambles it using a math trick called
 Advanced Encryption Standard.
-
-Example:
-
-Real password: 123456
+Example: Real password: 123456
 
 Chrome scrambles it into something like:
-
 v20 A83F92A1F0C8B...
 
-Now the password looks like random garbage.
-
-But to scramble and unscramble it, Chrome needs a special key.
+Now the password looks like random garbage. But to scramble and unscramble it, Chrome needs a special key.
 
 Step 2 — The secret key
 
-Chrome has a special key called the AES Master Key.
-
-Think of it like a golden key 🔑 that can unlock the scrambled password.
+Chrome has a special key called the AES Master Key. Think of it like a golden key 🔑 that can unlock the scrambled password.
 
 But Chrome worries again:
 
-“What if someone steals the golden key?”
-
-So Chrome hides the key too.
+“What if someone steals the golden key?”. So Chrome hides the key too.
 
 Step 3 — Lock the key inside another box
 
-Chrome puts the golden key inside another locked box.
-
-This special lock is called AppBound encryption.
+Chrome puts the golden key inside another locked box. This special lock is called AppBound encryption.
 
 This means:
 
-“Only the Chrome application is allowed to open this box.”
-
-The locked key is stored in a file called:
+“Only the Chrome application is allowed to open this box.”. The locked key is stored in a file called:
 
 Local State
 
-But Chrome still wants more security.
-
-Step 4 — Give the key to Windows to guard
+But Chrome still wants more security. Step 4 — Give the key to Windows to guard
 
 Chrome says:
 
-“Windows, please guard my key.”
+“Windows, please guard my key.” So Windows stores the key inside its secure vault using the system called Windows Cryptography API: Next Generation.
 
-So Windows stores the key inside its secure vault using the system called
-Windows Cryptography API: Next Generation.
+Inside Windows, the key is known as ChromeKey1. Now the key is protected by:
 
-Inside Windows, the key is known as ChromeKey1.
++ Your Windows user account
 
-Now the key is protected by:
++ Your computer system
 
-your Windows user account
++ Windows security
 
-your computer system
-
-Windows security
-
-It’s like putting the key inside a giant bank vault. 🏦
-
-The Whole Protection Chain
+It’s like putting the key inside a giant bank vault. The Whole Protection Chain
 
 So the secret protection looks like this:
-```json
+```php
 Password / Cookie
         │
         ▼
@@ -120,35 +93,25 @@ ChromeKey1
         ▼
 Windows Security Vault
 ```
-Many locks. Many protections.
+Many locks. Many protections. When Chrome needs the password again
 
-When Chrome needs the password again
+When you visit a website, Chrome needs the password. So Chrome asks Windows:
 
-When you visit a website, Chrome needs the password.
+“Hey Windows, can I have my key back?”, Windows checks:
 
-So Chrome asks Windows:
++ Are you the correct user?
 
-“Hey Windows, can I have my key back?”
++ Are you running Chrome?
 
-Windows checks:
+If everything is okay, Windows gives the key back. Then Chrome:
 
-Are you the correct user?
++ Unlocks the AES key
 
-Are you running Chrome?
++ Uses it to unscramble the password
 
-If everything is okay, Windows gives the key back.
++ And the real password appears again.
 
-Then Chrome:
-
-unlocks the AES key
-
-uses it to unscramble the password
-
-And the real password appears again.
-
-Why malware can still steal cookies
-
-If a malicious program runs as the same user, Windows might think:
+Why malware can still steal cookies? If a malicious program runs as the same user, Windows might think:
 
 “This program is allowed.”
 
