@@ -1,6 +1,6 @@
 ---
 layout: post
-title: "Breaking Chrome Secret Encryption on Windows (DPAPI + AES-GCM)"
+title: "Breaking Chrome Secret Encryption on Windows (DPAPI + AES-256-GCM)"
 date: 2026-03-14 10:00:00 +0700
 categories: [Security, Malware, Windows]
 ---
