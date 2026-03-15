@@ -41,12 +41,12 @@ After encryption, it becomes something like: v20 A83F92A1F0C8B...
 
 The `v20` prefix indicates the Chrome encryption version. Modern Chrome secrets follow the format:
 
-| Field       | Description |
-|-------------|-------------|
-| v20         | Encryption version identifier |
-| nonce       | 12-byte random initialization vector |
-| ciphertext  | Encrypted secret data |
-| tag         | 16-byte authentication tag (integrity check) |
+| Component   | Size        | Description |
+|-------------|-------------|-------------|
+| v20         | 3 bytes     | Chrome encryption version marker |
+| nonce       | 12 bytes    | Random IV used for AES-GCM |
+| ciphertext  | variable    | Encrypted secret (password/cookie) |
+| tag         | 16 bytes    | GCM authentication tag |
 
 --> Now the password looks like random data.
 
