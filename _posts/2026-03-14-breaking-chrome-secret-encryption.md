@@ -45,7 +45,7 @@ The `v20` prefix indicates the Chrome encryption version. Modern Chrome secrets 
 |-------------|-------------|-------------|
 | `v20`       | **3 bytes** | Chrome encryption version marker |
 | `nonce`     | **12 bytes**| Random IV used for AES-GCM |
-| `ciphertext`| variable    | Encrypted secret (password/cookie) |
+| `ciphertext`| **variable**    | Encrypted secret (password/cookie) |
 | `tag`       | **16 bytes**| GCM authentication tag |
 
 --> Now the password looks like random data.
