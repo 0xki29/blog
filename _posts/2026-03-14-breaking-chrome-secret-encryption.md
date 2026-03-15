@@ -17,119 +17,149 @@ In this article, we will analyze how Chrome protects its secrets and demonstrate
 
 ## Chrome Secret Encryption Mechanism on Windows
 
-Chrome Secret Encryption on Windows
+The Story of Chrome and the Secret Treasure
 
-On Windows systems, Google Chrome does not store sensitive data such as cookies and passwords in plaintext. Instead, it uses a layered protection mechanism that combines SQLite storage, AES encryption, and Windows DPAPI.
+One day, Google Chrome had to keep some very important secrets:
 
-Understanding this mechanism is essential to see why credential stealing malware is still able to steal user secrets.
+your website passwords
 
-1. Where Chrome Stores Sensitive Data
+your login cookies
 
-Chrome stores user data inside the user profile directory:
+Chrome wrote these secrets inside a notebook called SQLite.
 
-%USERPROFILE%\AppData\Local\Google\Chrome\User Data\Default\
+But Chrome knew something important:
 
-Several SQLite databases contain sensitive information:
+“If someone steals my notebook, they must NOT read the secrets!”
 
-| File | Content |
-|------|---------|
-| `Login Data` | Saved website passwords |
-| `Cookies` | HTTP cookies and session tokens |
-| `Web Data` | Autofill information |
-| `History` | Browsing history |
+So Chrome built many layers of protection.
 
-Although these databases can be opened with any SQLite viewer, the sensitive fields are encrypted.
+Step 1 — Hide the secret with magic scrambling
 
-For example:
+Before writing the password in the notebook, Chrome scrambles it using a math trick called
+Advanced Encryption Standard.
 
-logins.password_value
-
-cookies.encrypted_value
-
-These values contain encrypted blobs instead of plaintext credentials.
-
-## Chrome Master Key Storage
-
-While Chrome stores encrypted secrets inside SQLite databases, the actual encryption key is not stored in those databases.
-
-Instead, Chrome generates a master encryption key and stores it inside the Local State configuration file.
-
-Location:
-```php
-%USERPROFILE%\AppData\Local\Google\Chrome\User Data\Local State
-```
-The file is a JSON document containing browser configuration data. Inside this file, Chrome stores an entry called:
-
-os_crypt.app_bound_encrypted_key
-
-```json
 Example:
 
-"os_crypt": {
-  "app_bound_encrypted_key": "APPB..."
-}
-```
+Real password: 123456
 
-### Windows DPAPI and AppBound Protection
+Chrome scrambles it into something like:
 
-The `app_bound_encrypted_key` value stored in the **Local State** file is Base64-encoded and protected using Chrome’s AppBound encryption mechanism.
+v20 A83F92A1F0C8B...
 
-AppBound encryption is designed to bind the protection of sensitive keys to the local system and user context. Internally, this mechanism relies on Windows cryptographic services, including the **Windows Data Protection API (DPAPI)** and the **Windows Cryptography API: Next Generation (CNG)**.
+Now the password looks like random garbage.
 
-The protection workflow can be summarized as follows:
+But to scramble and unscramble it, Chrome needs a special key.
 
-1. Chrome generates a random **AES-256 master key** used to encrypt browser secrets.
-2. The key is protected using **AppBound encryption**, which leverages Windows cryptographic services.
-3. The protected key is stored inside the **Local State** configuration file as `os_crypt.app_bound_encrypted_key`.
+Step 2 — The secret key
 
-When Chrome starts, it must recover this master key before it can decrypt stored secrets such as cookies or saved passwords. To do this, Chrome invokes Windows cryptographic APIs (such as `CryptUnprotectData()` and CNG routines) to unwrap the protected key and restore the original AES-256 key in memory.
+Chrome has a special key called the AES Master Key.
 
-Simplified flow:
-```bash
-Cookie / Password
+Think of it like a golden key 🔑 that can unlock the scrambled password.
+
+But Chrome worries again:
+
+“What if someone steals the golden key?”
+
+So Chrome hides the key too.
+
+Step 3 — Lock the key inside another box
+
+Chrome puts the golden key inside another locked box.
+
+This special lock is called AppBound encryption.
+
+This means:
+
+“Only the Chrome application is allowed to open this box.”
+
+The locked key is stored in a file called:
+
+Local State
+
+But Chrome still wants more security.
+
+Step 4 — Give the key to Windows to guard
+
+Chrome says:
+
+“Windows, please guard my key.”
+
+So Windows stores the key inside its secure vault using the system called
+Windows Cryptography API: Next Generation.
+
+Inside Windows, the key is known as ChromeKey1.
+
+Now the key is protected by:
+
+your Windows user account
+
+your computer system
+
+Windows security
+
+It’s like putting the key inside a giant bank vault. 🏦
+
+The Whole Protection Chain
+
+So the secret protection looks like this:
+```json
+Password / Cookie
         │
         ▼
-AES-256-GCM
+AES scrambling
         │
         ▼
 AES Master Key
         │
         ▼
-AppBound Encryption
+AppBound lock
         │
         ▼
 ChromeKey1
         │
         ▼
-Windows Crypto System
+Windows Security Vault
 ```
+Many locks. Many protections.
 
+When Chrome needs the password again
 
-Because DPAPI ties encryption to the current Windows user, the key can only be decrypted by processes running under the same user context.
-However, malware running on the victim's machine automatically inherits this context, allowing it to recover the key as well.
-Chrome Encrypted Secret Format. After recovering the AES key, Chrome can decrypt secrets stored in the SQLite databases.
+When you visit a website, Chrome needs the password.
 
-Modern Chrome versions store encrypted secrets using the following structure:
-```php
-v20 | nonce | ciphertext | tag
-```
-Component breakdown:
+So Chrome asks Windows:
 
-| Component | Description |
-|------|---------|
-| `v20` | Encryption version identifier |
-| `nonce` | 12-byte random initialization vector |
-| `ciphertext` | Encrypted secret |
-| `tag` | 16-byte authentication tag |
+“Hey Windows, can I have my key back?”
 
-Chrome uses AES-256-GCM for encryption. AES-GCM provides two critical properties:
-Confidentiality – the secret cannot be read without the key
-Integrity – any modification to the ciphertext causes decryption to fail
-To decrypt a secret, the following inputs are required:
-```php
-SQLite → extract encrypted_value
-Local State → extract app_bound_encrypted_key
-DPAPI → recover AES key
-AES-GCM → decrypt secret
-```
-Once these values are extracted, the secret can be decrypted using a standard AES-GCM implementation.
+Windows checks:
+
+Are you the correct user?
+
+Are you running Chrome?
+
+If everything is okay, Windows gives the key back.
+
+Then Chrome:
+
+unlocks the AES key
+
+uses it to unscramble the password
+
+And the real password appears again.
+
+Why malware can still steal cookies
+
+If a malicious program runs as the same user, Windows might think:
+
+“This program is allowed.”
+
+So Windows may still return the key.
+
+Then the malware can:
+
+read the Chrome files
+
+ask Windows for the key
+
+decrypt the cookies and passwords
+
+That’s how many Chrome stealers work.
