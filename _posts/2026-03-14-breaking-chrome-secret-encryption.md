@@ -39,6 +39,15 @@ Real password: 123456
 
 After encryption, it becomes something like: v20 A83F92A1F0C8B...
 
+The `v20` prefix indicates the Chrome encryption version. Modern Chrome secrets follow the format:
+
+| Field       | Description |
+|-------------|-------------|
+| v20         | Encryption version identifier |
+| nonce       | 12-byte random initialization vector |
+| ciphertext  | Encrypted secret data |
+| tag         | 16-byte authentication tag (integrity check) |
+
 --> Now the password looks like random data.
 
 Without the correct key, it is impossible to turn this encrypted value back into the original password.
