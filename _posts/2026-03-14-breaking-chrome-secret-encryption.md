@@ -17,7 +17,7 @@ In this article, we will analyze how Chrome protects its secrets and demonstrate
 
 ## Chrome Secret Encryption Mechanism on Windows
 
-The Story of Chrome and the Secret Treasure
+The Story of Chrome and the Secret Treasure:
 
 One day, Google Chrome had to keep some very important secrets:
 
