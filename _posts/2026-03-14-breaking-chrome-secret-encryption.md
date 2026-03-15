@@ -17,28 +17,31 @@ In this article, we will analyze how Chrome protects its secrets and demonstrate
 
 ## Chrome Secret Encryption Mechanism on Windows
 
-The Story of Chrome and the Secret Treasure:
+The Story of Chrome and the Secret Treasure
 
-One day, Google Chrome had to keep some very important secrets:
+One day, Google Chrome had to protect some very important secrets:
 
 + Your website passwords
 
 + Your login cookies
 
-Chrome wrote these secrets inside a notebook called SQLite. But Chrome knew something important:
+Chrome stored these secrets inside a notebook called SQLite. But Chrome knew something important:
 
-“If someone steals my notebook, they must NOT read the secrets!”. So Chrome built many layers of protection.
+“If someone steals my notebook, they must NOT be able to read the secrets.”. So Chrome built several layers of protection.
 
-Step 1 — Hide the secret with magic scrambling
+Step 1 — Hide the secret with encryption
 
-Before writing the password in the notebook, Chrome scrambles it using a math trick called
-Advanced Encryption Standard.
-Example: Real password: 123456
+Before writing the password into the notebook, Chrome encrypts it using the Advanced Encryption Standard (AES-256-GCM).
 
-Chrome scrambles it into something like:
-v20 A83F92A1F0C8B...
+For example:
 
-Now the password looks like random garbage. But to scramble and unscramble it, Chrome needs a special key.
+Real password: 123456
+
+After encryption, it becomes something like: v20 A83F92A1F0C8B...
+
+--> Now the password looks like random data.
+
+Without the correct key, it is impossible to turn this encrypted value back into the original password.
 
 Step 2 — The secret key
 
