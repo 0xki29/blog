@@ -70,18 +70,19 @@ Example:
 }
 ```
 
-This value is:
-Base64 encoded
-Protected using Windows DPAPI
-Before Chrome can decrypt cookies or passwords, it must first recover this master key.
-Windows DPAPI Protection
-Chrome relies on the Windows Data Protection API (DPAPI) to protect the master key.
-DPAPI is a Windows cryptographic service designed to protect sensitive data tied to a specific user account.
-The protection workflow looks like this:
-Chrome generates a random AES-256 key
-The key is encrypted using DPAPI
-The encrypted key is stored in Local State
-When Chrome starts, it calls CryptUnprotectData() to recover the original key
+### Windows DPAPI and AppBound Protection
+
+The `app_bound_encrypted_key` value stored in the **Local State** file is Base64-encoded and protected using Chrome’s AppBound encryption mechanism.
+
+AppBound encryption is designed to bind the protection of sensitive keys to the local system and user context. Internally, this mechanism relies on Windows cryptographic services, including the **Windows Data Protection API (DPAPI)** and the **Windows Cryptography API: Next Generation (CNG)**.
+
+The protection workflow can be summarized as follows:
+
+1. Chrome generates a random **AES-256 master key** used to encrypt browser secrets.
+2. The key is protected using **AppBound encryption**, which leverages Windows cryptographic services.
+3. The protected key is stored inside the **Local State** configuration file as `os_crypt.app_bound_encrypted_key`.
+
+When Chrome starts, it must recover this master key before it can decrypt stored secrets such as cookies or saved passwords. To do this, Chrome invokes Windows cryptographic APIs (such as `CryptUnprotectData()` and CNG routines) to unwrap the protected key and restore the original AES-256 key in memory.
 
 Simplified flow:
 ```bash
