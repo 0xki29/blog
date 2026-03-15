@@ -85,17 +85,22 @@ When Chrome starts, it calls CryptUnprotectData() to recover the original key
 
 Simplified flow:
 ```bash
-AppBoundKey
-   ↓
-AES-GCM encrypted
-   ↓
-AES key protected by ChromeKey1
-   ↓
-DPAPI USER
-   ↓
-DPAPI SYSTEM
-   ↓
-Stored in Local State
+Cookie / Password
+        │
+        ▼
+AES-256-GCM
+        │
+        ▼
+AES Master Key
+        │
+        ▼
+AppBound Encryption
+        │
+        ▼
+ChromeKey1
+        │
+        ▼
+Windows Crypto System
 ```
 
 
