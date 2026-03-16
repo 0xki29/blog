@@ -66,7 +66,8 @@ Chrome puts the golden key inside another locked box. This special lock is calle
 
 This means:
 
-“Only the Chrome application is allowed to open this box.”. The locked key is stored in a file called:
+"In theory, only Chrome should be able to access this key. In practice, any process running under the same user context may still retrieve it." 
+The locked key is stored in a file called:
 
 Local State
 
