@@ -365,4 +365,45 @@ ULONG GetProcessPid(_In_ LPCWSTR ProcessName)
 --> `This function enumerates running processes to find a process by name and returns its Process ID (PID).`
 
 
+### GetSystemToken
+
+```php
+typedef NTSTATUS(NTAPI* RtlAcquirePrivilege_t)(
+    PULONG Privilege,
+    ULONG NumPriv,
+    ULONG Flags,
+    PVOID* ReturnedState
+    );
+
+typedef NTSTATUS(NTAPI* RtlReleasePrivilege_t)(
+    PVOID State
+    );
+
+
+#define SE_DEBUG_PRIVILEGE 20
+
+HANDLE GetSystemToken()
+{
+    NTSTATUS Status;
+    ULONG Privilege = SE_DEBUG_PRIVILEGE;
+    PVOID State;
+
+    HMODULE ntdll = GetModuleHandleW(L"ntdll.dll");
+
+    RtlAcquirePrivilege_t RtlAcquirePrivilege =
+        (RtlAcquirePrivilege_t)GetProcAddress(ntdll, "RtlAcquirePrivilege");
+
+    Status = RtlAcquirePrivilege(&Privilege, 1, 0, &State);
+
+    if (!NT_SUCCESS(Status))
+    {
+        wprintf(L"Could not acquire SeDebugPrivilege: 0x%08lX\n", Status);
+        return NULL;
+    }
+
+    return OpenProcessTokenByName(L"csrss.exe");
+}
+```
+
+
 
