@@ -592,10 +592,10 @@ However, the result is not yet the final key. Instead, Key.pbData contains a str
 
 | Component   | Size        | Description                              |
 |------------|------------|------------------------------------------|
-| AesKey     | 32 bytes   | Key used for final decryption (AES-256)  |
-| Nonce      | 12 bytes   | Initialization vector (IV)               |
-| Ciphertext | Variable   | Encrypted app-bound key                  |
-| Tag        | 16 bytes   | GCM authentication tag                   |
+| `AesKey`     | **32 bytes**   | Key used for final decryption (AES-256)  |
+| `Nonce`      | **12 bytes**   | Initialization vector (IV)               |
+| `Ciphertext` | **Variable**   | Encrypted app-bound key                  |
+| `Tag`       | **16 bytes**   | GCM authentication tag                   |
 
 + Level 4 : Decrypting Chrome’s Internal AES Key
 
