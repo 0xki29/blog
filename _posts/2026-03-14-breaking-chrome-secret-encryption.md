@@ -140,6 +140,10 @@ That’s how many Chrome stealers work.
 
 ## Breaking Chrome Secret Protection (Implementation)
 
+## 1️⃣ Overview
+Implementation Overview
+
+In this section, we will replicate the exact steps used by information stealers to recover Chrome secrets.
 
 
 ### Chrome Secret Decryption Flow
