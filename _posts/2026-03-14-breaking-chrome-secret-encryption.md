@@ -227,6 +227,8 @@ PUCHAR ReadFileContents(_In_ PWCHAR FileName, _Inout_ PULONG Size)
 ### ExtractAppBoundKey
 
 ```php
+CONST CHAR kCryptAppBoundKeyPrefix[] = { 'A', 'P', 'P', 'B' };
+
 BOOLEAN ExtractAppBoundKey(_In_ PSTR LocalState, _Out_ PUCHAR DecryptedKey)
 {
     PSTR    AppBoundKey;
