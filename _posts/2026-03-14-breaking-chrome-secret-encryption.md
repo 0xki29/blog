@@ -407,6 +407,13 @@ HANDLE GetSystemToken()
 
 --> `Enables SeDebugPrivilege → opens token of csrss.exe → gains SYSTEM privileges. csrss.exe is targeted because it runs as SYSTEM and is a trusted critical process.`
 
+
+
+
+
+
+### OpenProcessTokenByName
+
 ```php
 HANDLE OpenProcessTokenByName(_In_ LPCWSTR ProcessName)
 {
