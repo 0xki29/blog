@@ -137,3 +137,21 @@ So Windows may still return the key. Then the malware can:
 + decrypt the cookies and passwords
 
 That’s how many Chrome stealers work.
+
+## Breaking Chrome Secret Protection (Implementation)
+
+
+
+### Chrome Secret Decryption Flow
+
+
+| # | Step | Description |
+|---|------|------------|
+| 1 | `Read Local State` | Read the `Local State` file to obtain the encrypted key |
+| 2 | `Extract AppBoundKey` | Extract `app_bound_encrypted_key` (Base64 encoded) |
+| 3 | `Decode Base64` | Decode the Base64 string into raw bytes |
+| 4 | `DPAPI Decrypt` | Decrypt using DPAPI (User + SYSTEM context) |
+| 5 | `CNG Decrypt` | Decrypt using `ChromeKey1` via Windows CNG (BCrypt) |
+| 6 | `XOR Unmask` | Remove XOR-based obfuscation layer |
+| 7 | `AES-GCM Decrypt` | Decrypt the blob to retrieve the AES Master Key |
+| 8 | `Decrypt Secrets` | Use the Master Key to decrypt cookies and passwords |
