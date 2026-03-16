@@ -146,7 +146,7 @@ Implementation Overview
 In this section, we will replicate the exact steps used by information stealers to recover Chrome secrets.
 
 
-### Chrome Secret Decryption Flow
+## 2️⃣ Attack Flow
 
 
 | # | Step | Description |
@@ -159,3 +159,7 @@ In this section, we will replicate the exact steps used by information stealers 
 | 6 | `XOR Unmask` | Remove XOR-based obfuscation layer |
 | 7 | `AES-GCM Decrypt` | Decrypt the blob to retrieve the AES Master Key |
 | 8 | `Decrypt Secrets` | Use the Master Key to decrypt cookies and passwords |
+
+## 3️⃣ Functions of Program
+
+### ReadFileContents
