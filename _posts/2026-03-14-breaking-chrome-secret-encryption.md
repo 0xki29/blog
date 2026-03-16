@@ -163,3 +163,57 @@ In this section, we will replicate the exact steps used by information stealers 
 ## 3️⃣ Functions of Program
 
 ### ReadFileContents
+
+```C
+PUCHAR ReadFileContents(_In_ PWCHAR FileName, _Inout_ PULONG Size)
+{
+    HANDLE FileHandle;
+    ULONG  FileSize;
+    ULONG  BytesRead;
+    BOOL   Result;
+    PUCHAR Buffer = 0;
+
+    FileHandle = CreateFileW(FileName, GENERIC_READ, FILE_SHARE_READ | FILE_SHARE_WRITE, 0, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, 0);
+
+    if (FileHandle == INVALID_HANDLE_VALUE)
+    {
+        wprintf(L"Couldn't open a handle on the: %ws file: %lu\n", FileName, GetLastError());
+        return 0;
+    }
+
+    do
+    {
+        FileSize = GetFileSize(FileHandle, 0);
+
+        if (FileSize == 0)
+        {
+            wprintf(L"Couldn't get the size of the: %ws file: %lu\n", FileName, GetLastError());
+            break;
+        }
+
+        Buffer = (PUCHAR)HeapAlloc(GetProcessHeap(), 0, FileSize);
+
+        if (Buffer == 0)
+        {
+            wprintf(L"Couldn't allocate the %lu bytes to read : %ws\n", FileSize, FileName);
+            break;
+        }
+
+        Result = ReadFile(FileHandle, Buffer, FileSize, &BytesRead, 0);
+
+        if (Result == FALSE || BytesRead != FileSize)
+        {
+            wprintf(L"Could read the: %ws file: %lu\n", FileName, GetLastError());
+            HeapFree(GetProcessHeap(), 0, Buffer);
+            Buffer = 0;
+        }
+        else if (Size != 0)
+        {
+            *Size = FileSize;
+        }
+    } while (FALSE);
+
+    CloseHandle(FileHandle);
+    return Buffer;
+}
+```
