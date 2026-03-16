@@ -270,3 +270,41 @@ The ExtractAppBoundKey function is responsible for extracting the encrypted app-
 + DecryptedKey - A buffer that will receive the decrypted app-bound key.
 
 --> `Extracts the app-bound key by locating the app_bound_encrypted_key in the Local State file, Base64-decoding it, removing the "APPB" header, and decrypting the remaining blob using DPAPI and AES-256-GCM to recover the plaintext AES master key.`
+
+
+### Base64Decode
+
+```php
+PBYTE Base64Decode(IN LPCSTR pszInput, IN DWORD cbInput, OUT PDWORD pcbOutput)
+{
+    PBYTE   pbOutput = NULL;
+    DWORD   dwOutput = 0x00;
+
+    if (!pszInput || cbInput == 0 || !pcbOutput) return NULL;
+
+    *pcbOutput = 0;
+
+    if (!CryptStringToBinaryA(pszInput, cbInput, CRYPT_STRING_BASE64, NULL, &dwOutput, NULL, NULL))
+    {
+        DBGA("[!] CryptStringToBinaryA Failed With Error: %lu", GetLastError());
+        return NULL;
+    }
+
+    if (!(pbOutput = (PBYTE)HeapAlloc(GetProcessHeap(), HEAP_ZERO_MEMORY, dwOutput)))
+    {
+        DBGA("[!] HeapAlloc Failed With Error: %lu", GetLastError());
+        return NULL;
+    }
+
+    if (!CryptStringToBinaryA(pszInput, cbInput, CRYPT_STRING_BASE64, pbOutput, &dwOutput, NULL, NULL))
+    {
+        DBGA("[!] CryptStringToBinaryA Failed With Error: %lu", GetLastError());
+        HEAP_FREE(pbOutput);
+        return NULL;
+    }
+
+    *pcbOutput = dwOutput;
+    return pbOutput;
+}
+```
+--> `This function decodes the Base64-encoded app_bound_encrypted_key into raw bytes so it can be passed to DPAPI (CryptUnprotectData) for decryption.`
