@@ -455,7 +455,12 @@ HANDLE OpenProcessTokenByName(_In_ LPCWSTR ProcessName)
 ### DecryptAppBoundKey
 
 ```php
-CONST UCHAR XorKey[] = { 0xCC, 0xF8, 0xA1, 0xCE, 0xC5, 0x66, 0x05, 0xB8, 0x51, 0x75, 0x52, 0xBA, 0x1A, 0x2D, 0x06, 0x1C, 0x03, 0xA2, 0x9E, 0x90, 0x27, 0x4F, 0xB2, 0xFC, 0xF5, 0x9B, 0xA4, 0xB7, 0x5C, 0x39, 0x23, 0x90 };
+CONST UCHAR XorKey[] = {
+    0x13, 0x7A, 0xD2, 0x4F, 0x99, 0x21, 0xB6, 0x8C,
+    0xE5, 0x3B, 0x60, 0xAA, 0xF1, 0x0D, 0x47, 0x92,
+    0x5E, 0xC8, 0x14, 0x6F, 0x2A, 0xD9, 0x73, 0xBC,
+    0x81, 0x36, 0xAF, 0x55, 0x08, 0xE2, 0x9C, 0x4A
+};
 
 BOOLEAN DecryptAppBoundKey(_In_ PUCHAR AppBoundKey, _In_ ULONG AppBoundKeySize, _Out_ PUCHAR DecryptedKey)
 {
@@ -558,5 +563,78 @@ BOOLEAN DecryptAppBoundKey(_In_ PUCHAR AppBoundKey, _In_ ULONG AppBoundKeySize, 
     CloseHandle(SystemToken);
     return Result;
 }
+```
++ Level 1 : The AppBoundKey is first protected using the Windows Data Protection API under the SYSTEM context.
 
+To decrypt it, the process must impersonate the SYSTEM user:
+
+```php
+ImpersonateLoggedOnUser(SystemToken);
+CryptUnprotectData(&EncryptedKey, ..., &UserKey);
+RevertToSelf();
+```
+This removes the outer DPAPI layer and produces an intermediate blob:
+
+UserKey – still encrypted, but now bound to the Chrome user context.
+
++ Level 2 : User-level DPAPI Decryption
+
+The second layer is protected using the Chrome user’s DPAPI context:
+
+```php
+CryptUnprotectData(&UserKey, ..., &Key);
+```
+At this point, all DPAPI protection is removed.
+
+However, the result is not yet the final key. Instead, Key.pbData contains a structured blob defined by Chrome.
+
++ Level 3 : Parsing Chrome’s Key Structure
+
+| Component   | Size        | Description                              |
+|------------|------------|------------------------------------------|
+| AesKey     | 32 bytes   | Key used for final decryption (AES-256)  |
+| Nonce      | 12 bytes   | Initialization vector (IV)               |
+| Ciphertext | Variable   | Encrypted app-bound key                  |
+| Tag        | 16 bytes   | GCM authentication tag                   |
+
++ Level 4 : Decrypting Chrome’s Internal AES Key
+
+The extracted AesKey is still protected using a Chrome-specific key stored in the system’s cryptographic provider.
+
+This requires SYSTEM privileges again:
+```php
+ImpersonateLoggedOnUser(SystemToken);
+DecryptUsingChromeKey(AesKey);
+RevertToSelf();
+```
+
++ Level 5 : XOR Deobfuscation
+
+After decryption, the AES key is further obfuscated using a fixed XOR mask:
+```php
+AesKey[i] ^= XorKey[i];
+```
+This step removes a lightweight obfuscation layer applied by Chrome to avoid exposing the key directly in memory.
+
++ Level 6 : Final AES-GCM Decryption
+
+Finally, the fully recovered AES key is used to decrypt the application-bound key:
+```php
+Aes256GcmDecrypt(AesKey, ..., Ciphertext);
+```
+
+If successful, the result is copied to the output buffer:
+```php
+RtlCopyMemory(DecryptedKey, Ciphertext, 32);
+```
+
+--> The protection model can be summarized as:
+```php
+DPAPI (SYSTEM)
+   ↓
+DPAPI (USER)
+   ↓
+Chrome-specific encryption (AES + XOR)
+   ↓
+Final App-Bound Key
 ```
