@@ -164,7 +164,7 @@ In this section, we will replicate the exact steps used by information stealers 
 
 ### ReadFileContents
 
-```C
+```php
 PUCHAR ReadFileContents(_In_ PWCHAR FileName, _Inout_ PULONG Size)
 {
     HANDLE FileHandle;
