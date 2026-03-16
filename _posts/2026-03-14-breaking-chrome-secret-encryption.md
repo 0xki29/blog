@@ -127,14 +127,12 @@ Why malware can still steal cookies? If a malicious program runs as the same use
 
 “This program is allowed.”
 
-So Windows may still return the key.
+So Windows may still return the key. Then the malware can:
 
-Then the malware can:
++ read the Chrome files
 
-read the Chrome files
++ ask Windows for the key
 
-ask Windows for the key
-
-decrypt the cookies and passwords
++ decrypt the cookies and passwords
 
 That’s how many Chrome stealers work.
