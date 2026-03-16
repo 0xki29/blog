@@ -217,4 +217,4 @@ PUCHAR ReadFileContents(_In_ PWCHAR FileName, _Inout_ PULONG Size)
     return Buffer;
 }
 ```
---> This function opens a file, reads all of its contents into a heap-allocated memory buffer, and returns the raw bytes along with the file size for further processing.
+--> `This function opens a file, reads all of its contents into a heap-allocated memory buffer, and returns the raw bytes along with the file size for further processing.`
