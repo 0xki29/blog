@@ -826,3 +826,33 @@ VOID PrintChromeSecret(_In_ PUCHAR AppBoundKey, _In_ UCHAR Type, _In_ PUCHAR Dat
     }
 }
 ```
+
+Decrypting Chrome Secrets (Final Stage)
+
+After successfully recovering the AES master key (AppBoundKey), the final step is to decrypt the actual Chrome secrets stored inside SQLite databases such as Login Data and Cookies.
+
+Chrome stores encrypted secrets in a structured format that begins with a version identifier, followed by the components required for AES-GCM decryption.
+
+Encrypted Blob Structure
+
+Each encrypted value follows this layout:
+
+`[v20][nonce][ciphertext][authentication tag]`
+
+| Component   | Size        | Description |
+|-------------|-------------|-------------|
+| `v20`       | **3 bytes** | Chrome encryption version marker |
+| `nonce`     | **12 bytes**| Random IV used for AES-GCM |
+| `ciphertext`| **variable**    | Encrypted secret (password/cookie) |
+| `tag`       | **16 bytes**| GCM authentication tag |
+
+
+Before attempting decryption, the implementation verifies that the blob starts with the expected v20 header. This prevents parsing errors and ensures compatibility with the correct encryption format.
+
+The function extracts each component by calculating offsets:
+
++ The nonce is located immediately after the version header
++ The tag is always the last 16 bytes of the buffer
++ The ciphertext occupies the remaining bytes in between
+
+This step is critical, as AES-GCM requires all three components (nonce, ciphertext, tag) to perform successful decryption.
