@@ -720,24 +720,13 @@ BOOLEAN Aes256GcmDecrypt(_In_ PUCHAR Key, _In_ ULONG KeySize, _In_ PUCHAR Nonce,
 }
 ```
 
-The Aes256GcmDecrypt function uses the Windows BCrypt API to perform AES-256-GCM decryption directly on a memory buffer (in-place).
+`The function uses Windows CNG (BCrypt) to perform AES-256-GCM decryption in-place.
+It first opens an AES provider and explicitly sets the chaining mode to GCM, as the mode is not fixed by default.
 
-It takes 8 parameters:
+The raw AES key is wrapped into a BCRYPT_KEY_DATA_BLOB structure and imported into the CNG subsystem.
 
-+ Key / KeySize: the AES key and its size
-+ Nonce / NonceSize: the nonce (IV) used for GCM
-+ Tag / TagSize: authentication tag used to verify integrity
-+ Ciphertext / CiphertextSize: encrypted data to be decrypted
+The authenticated cipher parameters are then configured using the nonce and authentication tag. This implementation does not include AAD (Additional Authenticated Data).
 
-First, the function opens an AES algorithm provider using BCryptOpenAlgorithmProvider.
-Since AES defaults to CBC mode, it explicitly switches to GCM mode using BCryptSetProperty.
+Finally, BCryptDecrypt is used to both decrypt and verify integrity. If the authentication tag is invalid, the operation fails, preventing tampered data from being accepted.
 
-Next, the raw AES key is imported via BCryptImportKey by wrapping it into a key blob structure.
-Then, it configures the authenticated cipher mode by setting:
-
-+ the Nonce
-+ the Tag
-
-This is critical because AES-GCM ensures both confidentiality and integrity. If the tag is invalid, decryption will fail.
-
-Finally, BCryptDecrypt is called to decrypt the data in-place, meaning the original ciphertext buffer is overwritten with plaintext.
+The decryption is performed in-place, meaning the ciphertext buffer is overwritten with plaintext, which may be unsafe if authentication fails.`
