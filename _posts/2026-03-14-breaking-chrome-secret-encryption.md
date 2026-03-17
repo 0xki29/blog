@@ -640,3 +640,104 @@ Chrome-specific encryption (AES + XOR)
    ↓
 Final App-Bound Key
 ```
+
+### Aes256GcmDecrypt
+
+```php
+BOOLEAN Aes256GcmDecrypt(_In_ PUCHAR Key, _In_ ULONG KeySize, _In_ PUCHAR Nonce, _In_ ULONG NonceSize, _In_ PUCHAR Tag, _In_ ULONG TagSize, _Inout_ PUCHAR Ciphertext, _Inout_ ULONG CiphertextLength)
+{
+    BCRYPT_AUTHENTICATED_CIPHER_MODE_INFO CipherInfo;
+    BCRYPT_ALG_HANDLE                     AlgorithmHandle;
+    BCRYPT_KEY_HANDLE                     KeyHandle = 0;
+    UCHAR                                 Buffer[AES_KEY_BLOB_SIZE];
+    BCRYPT_KEY_DATA_BLOB_HEADER* KeyBlob;
+    ULONG                                 PlaintextSize;
+    NTSTATUS                              Status;
+
+
+
+    Status = BCryptOpenAlgorithmProvider(&AlgorithmHandle, BCRYPT_AES_ALGORITHM, 0, 0);
+
+    if (!BCRYPT_SUCCESS(Status))
+    {
+        wprintf(L"Could not open a handle on the AES algorithm provider: 0x%08lX\n", Status);
+        return FALSE;
+    }
+
+    do
+    {
+
+
+        Status = BCryptSetProperty(AlgorithmHandle, BCRYPT_CHAINING_MODE, (PUCHAR)BCRYPT_CHAIN_MODE_GCM, sizeof(BCRYPT_CHAIN_MODE_GCM), 0);
+
+        if (!BCRYPT_SUCCESS(Status))
+        {
+            break;
+        }
+
+
+
+        KeyBlob = (BCRYPT_KEY_DATA_BLOB_HEADER*)Buffer;
+        KeyBlob->dwMagic = BCRYPT_KEY_DATA_BLOB_MAGIC;
+        KeyBlob->dwVersion = 1;
+        KeyBlob->cbKeyData = KeySize;
+
+        RtlCopyMemory(Buffer + sizeof(BCRYPT_KEY_DATA_BLOB_HEADER), Key, KeySize);
+
+        Status = BCryptImportKey(AlgorithmHandle, 0, BCRYPT_KEY_DATA_BLOB, &KeyHandle, 0, 0, Buffer, sizeof(Buffer), 0);
+
+        if (!BCRYPT_SUCCESS(Status))
+        {
+            wprintf(L"Could not import AES key: 0x%08lX\n", Status);
+            break;
+        }
+
+    
+
+        BCRYPT_INIT_AUTH_MODE_INFO(CipherInfo);
+        CipherInfo.pbNonce = Nonce;
+        CipherInfo.cbNonce = NonceSize;
+        CipherInfo.pbTag = Tag;
+        CipherInfo.cbTag = TagSize;
+
+
+        Status = BCryptDecrypt(KeyHandle, Ciphertext, CiphertextLength, &CipherInfo, 0, 0, Ciphertext, CiphertextLength, &CiphertextLength, 0);
+
+        if (!BCRYPT_SUCCESS(Status))
+        {
+            wprintf(L"Could not decrypt the ciphertext: 0x%08lX\n", Status);
+        }
+
+    } while (FALSE);
+
+    if (KeyHandle != 0)
+    {
+        BCryptDestroyKey(KeyHandle);
+    }
+
+    BCryptCloseAlgorithmProvider(AlgorithmHandle, 0);
+    return BCRYPT_SUCCESS(Status);
+}
+```
+
+The Aes256GcmDecrypt function uses the Windows BCrypt API to perform AES-256-GCM decryption directly on a memory buffer (in-place).
+
+It takes 8 parameters:
+
++ Key / KeySize: the AES key and its size
++ Nonce / NonceSize: the nonce (IV) used for GCM
++ Tag / TagSize: authentication tag used to verify integrity
++ Ciphertext / CiphertextSize: encrypted data to be decrypted
+
+First, the function opens an AES algorithm provider using BCryptOpenAlgorithmProvider.
+Since AES defaults to CBC mode, it explicitly switches to GCM mode using BCryptSetProperty.
+
+Next, the raw AES key is imported via BCryptImportKey by wrapping it into a key blob structure.
+Then, it configures the authenticated cipher mode by setting:
+
++ the Nonce
++ the Tag
+
+This is critical because AES-GCM ensures both confidentiality and integrity. If the tag is invalid, decryption will fail.
+
+Finally, BCryptDecrypt is called to decrypt the data in-place, meaning the original ciphertext buffer is overwritten with plaintext.
