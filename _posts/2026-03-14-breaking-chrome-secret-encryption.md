@@ -895,3 +895,5 @@ The code demonstrates the full attack chain, including:
 
 
 ## Proof of Concept (Real-World Decryption)
+
+![Short description](/blog/assets/poc.png)
