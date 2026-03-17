@@ -720,7 +720,7 @@ BOOLEAN Aes256GcmDecrypt(_In_ PUCHAR Key, _In_ ULONG KeySize, _In_ PUCHAR Nonce,
 }
 ```
 
-`The function uses Windows CNG (BCrypt) to perform AES-256-GCM decryption in-place.
+--> `The function uses Windows CNG (BCrypt) to perform AES-256-GCM decryption in-place.
 It first opens an AES provider and explicitly sets the chaining mode to GCM, as the mode is not fixed by default.
 
 The raw AES key is wrapped into a BCRYPT_KEY_DATA_BLOB structure and imported into the CNG subsystem.
