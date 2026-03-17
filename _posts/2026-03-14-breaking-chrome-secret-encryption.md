@@ -880,5 +880,18 @@ This highlights a fundamental limitation:
 
 Encryption protects data at rest, but not against a compromised runtime environment.
 
+## Source Code
 
-## POC (Proof Of Concept)
+The full proof-of-concept implementation is available here:
+
+👉 https://github.com/0xki29/chrome-secret-decryptor
+
+The code demonstrates the full attack chain, including:
+
+- AppBoundKey extraction
+- DPAPI decryption (SYSTEM + USER)
+- ChromeKey1 abuse via CNG
+- AES-256-GCM secret decryption
+
+
+## Proof of Concept (Real-World Decryption)
