@@ -407,7 +407,15 @@ HANDLE GetSystemToken()
 }
 ```
 
---> `Enables SeDebugPrivilege → opens token of csrss.exe → gains SYSTEM privileges. csrss.exe is targeted because it runs as SYSTEM and is a trusted critical process.`
+--> `This step is critical because Chrome's App-Bound Key is protected using SYSTEM-level DPAPI.
+
+To bypass this restriction, the attacker must obtain SYSTEM privileges. This is achieved by:
+
+- Enabling SeDebugPrivilege
+- Opening the token of a SYSTEM process (csrss.exe)
+- Using it for impersonation
+
+This effectively allows the attacker to decrypt data that is normally restricted to system-level access.`
 
 
 
@@ -856,3 +864,21 @@ The function extracts each component by calculating offsets:
 + The ciphertext occupies the remaining bytes in between
 
 This step is critical, as AES-GCM requires all three components (nonce, ciphertext, tag) to perform successful decryption.
+
+## Why This Attack Works
+
+Despite multiple layers of protection, Chrome ultimately relies on the trust model of the Windows operating system.
+
+If an attacker is able to execute code under the same user context, or escalate to SYSTEM privileges, all protection layers become reversible:
+
+- DPAPI can be decrypted
+- App-bound encryption can be bypassed
+- ChromeKey1 can be accessed
+- AES-GCM secrets can be decrypted
+
+This highlights a fundamental limitation:
+
+Encryption protects data at rest, but not against a compromised runtime environment.
+
+
+## POC (Proof Of Concept)
