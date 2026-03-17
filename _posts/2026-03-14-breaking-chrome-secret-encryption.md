@@ -778,4 +778,4 @@ BOOLEAN DecryptUsingChromeKey(_In_ PUCHAR Ciphertext)
 ```
 
 
-`This function uses Windows CNG APIs to retrieve the Chrome-specific key (Google Chromekey1) from the Microsoft Software Key Storage Provider and uses it to decrypt a 32-byte app-bound encrypted key in-place. This step effectively recovers the raw AES key used by Chrome to protect sensitive data such as cookies and saved passwords.`
+--> `This function uses Windows CNG APIs to retrieve the Chrome-specific key (Google Chromekey1) from the Microsoft Software Key Storage Provider and uses it to decrypt a 32-byte app-bound encrypted key in-place. This step effectively recovers the raw AES key used by Chrome to protect sensitive data such as cookies and saved passwords.`
