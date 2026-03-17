@@ -730,3 +730,4 @@ The authenticated cipher parameters are then configured using the nonce and auth
 Finally, BCryptDecrypt is used to both decrypt and verify integrity. If the authentication tag is invalid, the operation fails, preventing tampered data from being accepted.
 
 The decryption is performed in-place, meaning the ciphertext buffer is overwritten with plaintext, which may be unsafe if authentication fails.`
+
