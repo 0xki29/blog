@@ -884,7 +884,7 @@ Encryption protects data at rest, but not against a compromised runtime environm
 
 The full proof-of-concept implementation is available here:
 
-👉 https://github.com/0xki29/chrome-secret-decryptor
+👉 `https://github.com/0xki29/chrome-secret-decryptor`
 
 The code demonstrates the full attack chain, including:
 
