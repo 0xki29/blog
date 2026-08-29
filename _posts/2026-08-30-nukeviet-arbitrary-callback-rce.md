@@ -189,7 +189,7 @@ save=1&fid=0&system=0&title=PoC+RCE&description=PoC&required=0&show_register=1&u
 
 Response mong đợi: `302 Found` redirect về trang danh sách field (`fields.php`) — nghĩa là INSERT thành công.
 
-**Lưu ý quan trọng khi tái tạo:** nếu bấm "Sửa" một field có sẵn thay vì "Thêm trường mới" (`fid` khác 0), server sẽ **ghi đè** `field_type` từ DB (`fields.php:194-204`):
+**Lưu ý quan trọng khi tái tạo:** nếu bấm "Sửa" một field có sẵn thay vì "Thêm trường mới" (`fid` khác 0), server sẽ **ghi đè** `field_type` từ DB (`fields.php`):
 
 ```php
 $dataform['field_type'] = $dataform_old['field_type'];       // lấy từ DB, không lấy từ POST
