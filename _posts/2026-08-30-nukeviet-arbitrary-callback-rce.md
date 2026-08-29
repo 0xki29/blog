@@ -62,7 +62,7 @@ Vì sao nghiêm trọng dù bước 1 cần quyền admin?
 
 ```text
 [SINK — Dynamic Function Call]
-modules/users/fields.check.php:141-143
+modules/users/fields.check.php
 
     } elseif ($row_f['match_type'] == 'callback') {
         if (function_exists($row_f['func_callback'])) {
@@ -80,14 +80,14 @@ Từ sink, trace ngược `$row_f['func_callback']` về nơi cấu hình:
 
 ```text
 [Stored Configuration]
-modules/users/admin/fields.php:372-390
+modules/users/admin/fields.php
 
     └─ func_callback được lưu vào {prefix}_users_field
        khi tạo mới custom field (fid=0)
 ```
 
 ![](/blog/assets/field2.png)
-        │
+        
 
 
 ```text
@@ -95,7 +95,7 @@ modules/users/admin/fields.php:372-390
         ▼
 
 [Source — Admin cấu hình callback]
-modules/users/admin/fields.php:231-237
+modules/users/admin/fields.php
 
     $dataform['func_callback'] =
         ($dataform['match_type'] == 'callback')
@@ -113,21 +113,31 @@ Execution path để kích hoạt sink:
 
 ```text
 [User Registration]
-modules/users/funcs/register.php:189
+modules/users/funcs/register.php
 
     $custom_fields = $nv_Request->get_array('custom_fields', 'post');
+```
 
-[ĐẶT HÌNH #4 — register.php:189]
+![](/blog/assets/custom.png)
+
+```text
+
         │
         ▼
-modules/users/funcs/register.php:279
+modules/users/funcs/register.php
 
     require NV_ROOTDIR . '/modules/users/fields.check.php';
 
-[ĐẶT HÌNH #5 — register.php:279]
+```
+
+
+![](/blog/assets/custom1.png)
+
+```text
+
         │
         ▼
-modules/users/fields.check.php:33-34
+modules/users/fields.check.php
 
     $value = (isset($custom_fields[$row_f['field']]))
         ? $custom_fields[$row_f['field']]
@@ -135,23 +145,22 @@ modules/users/fields.check.php:33-34
 
         └─ $value được truyền vào callback tại sink
 
-[ĐẶT HÌNH #6 — fields.check.php:33-34]
+
 ```
+
+![](/blog/assets/custom2.png)
+
 
 Ngoài registration, cùng sink còn được sử dụng qua:
 
 ```text
-modules/users/funcs/editinfo.php:552
-modules/users/funcs/editinfo.php:897
-modules/users/funcs/editinfo.php:1035
-modules/users/admin/user_add.php:201
+modules/users/funcs/editinfo.php
+modules/users/funcs/editinfo.php
+modules/users/funcs/editinfo.php
+modules/users/admin/user_add.php
 ```
 
 vì các flow này đều `require modules/users/fields.check.php`.
-
-[ĐẶT HÌNH #7 — Các execution path khác]
-
-**Lưu ý về sanitization:** `get_string('match_callback', 'post', '', false)` — `false` là tham số `$decode`, không phải `$filter`. NukeViet vẫn áp dụng filter mặc định cho POST. Tuy nhiên, điều này không giải quyết vấn đề vì root cause là **không có allowlist cho `func_callback`**, chỉ kiểm tra `function_exists()`.
 
 
 ## [](#header-3) Điều kiện khai thác
