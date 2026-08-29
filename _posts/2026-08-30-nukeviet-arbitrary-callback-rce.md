@@ -18,8 +18,8 @@ Bug xảy ra qua **2 giai đoạn**, cần phân biệt rõ ai làm gì:
 
 | Giai đoạn | Ai thực hiện | Hành động | Quyền cần |
 |---|---|---|---|
-| **1. Gài bẫy** | Admin quản trị module Users | Tạo field mới, đặt tên hàm callback = `system` | Chỉ cần quyền quản trị module Users (không cần GodAdmin) |
-| **2. Kích nổ** | **Bất kỳ ai**, kể cả khách vãng lai chưa có tài khoản | Vào trang đăng ký công khai, gõ lệnh shell vào đúng ô field đó | Không cần quyền gì |
+| **1. Poison** | Admin quản trị module Users | Tạo field mới, đặt tên hàm callback = `system` | Chỉ cần quyền quản trị module Users (không cần GodAdmin) |
+| **2. Trigger** | **Bất kỳ ai**, kể cả khách vãng lai chưa có tài khoản | Vào trang đăng ký công khai, gõ lệnh shell vào đúng ô field đó | Không cần quyền gì |
 
 ```
 [Giai đoạn 1 — 1 lần, cần admin]
