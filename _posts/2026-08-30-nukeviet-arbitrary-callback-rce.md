@@ -167,7 +167,7 @@ vì các flow này đều `require modules/users/fields.check.php`.
 
 1. Có tài khoản admin với quyền quản trị module **Users** (không cần GodAdmin/SPAdmin).
 2. `$global_config['allowuserreg']` khác `0` (cho phép đăng ký) — mặc định NukeViet bật (`register.php:27`).
-3. Đặt `field_type = textbox` khi tạo field — nhánh `match_type=callback` chỉ tồn tại trong `textbox|textarea|editor` (`fields.php:229`).
+3. Đặt `field_type = textbox` khi tạo field — nhánh `match_type=callback` chỉ tồn tại trong `textbox|textarea|editor` (`fields.php`).
 4. Tên field không được trùng cột có sẵn trong bảng `{prefix}_users_info` và không nằm trong blocklist `includes/field_not_allow.php`.
 
 ## [](#header-4) Khai thác — Giai đoạn 1: Gài bẫy
