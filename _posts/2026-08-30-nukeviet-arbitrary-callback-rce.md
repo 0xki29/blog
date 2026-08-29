@@ -54,7 +54,7 @@ Vì sao nghiêm trọng dù bước 1 cần quyền admin?
 | File lưu payload | `modules/users/admin/fields.php` |
 | File thực thi payload | `modules/users/fields.check.php` |
 
-## [](#header-2) Source-to-sink
+## [](#header-2) Sink-to-source
 
 # Data Flow: `func_callback` → `call_user_func()`
 
