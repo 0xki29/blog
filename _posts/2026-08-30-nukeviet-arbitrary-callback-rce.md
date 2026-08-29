@@ -47,7 +47,7 @@ Vì sao nghiêm trọng dù bước 1 cần quyền admin?
 
 | Trường | Giá trị |
 |---|---|
-| Mức độ | **Critical** |
+| Mức độ | **High** |
 | CWE | CWE-749 (Exposed Dangerous Method/Function) / CWE-94 (Code Injection) |
 | Loại | Arbitrary PHP function call → Remote Code Execution |
 | Vai trò cần có | Admin quản trị module `users` (mod-admin cấp module, **không cần** GodAdmin/SPAdmin) |
