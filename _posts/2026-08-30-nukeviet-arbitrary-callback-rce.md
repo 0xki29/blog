@@ -171,7 +171,7 @@ vì các flow này đều `require modules/users/fields.check.php`.
 3. Đặt `field_type = textbox` khi tạo field — nhánh `match_type=callback` chỉ tồn tại trong `textbox|textarea|editor` (`fields.php`).
 4. Tên field không được trùng cột có sẵn trong bảng `{prefix}_users_info` và không nằm trong blocklist `includes/field_not_allow.php`.
 
-## [](#header-4) Khai thác — Giai đoạn 1: Gài bẫy
+## [](#header-4) Khai thác — Giai đoạn 1: Poison
 
 Admin tạo field mới (`fid=0`, **không phải sửa field có sẵn**) với payload dạng:
 
@@ -199,7 +199,7 @@ $dataform['field'] = $dataform['fieldid'] = $dataform_old['field'];
 
 Nếu field cũ vốn là kiểu "lựa chọn" (dropdown/checkbox), code sẽ ép cứng `match_type='none'`, `func_callback=''` (`fields.php`) — dù request có gửi `match_type=callback` cũng bị xoá âm thầm trước khi ghi DB. Request vẫn trả `302` bình thường nên dễ nhầm là đã thành công. Bắt buộc phải tạo field mới (`fid=0`) từ đầu, không thể "biến hình" field có sẵn.
 
-## [](#header-5) Khai thác — Giai đoạn 2: Kích hoạt sink
+## [](#header-5) Khai thác — Giai đoạn 2: Trigger
 
 Bất kỳ ai — kể cả người dùng chưa có tài khoản — gửi request đăng ký với field vừa bị gài bẫy:
 
