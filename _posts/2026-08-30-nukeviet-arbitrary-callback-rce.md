@@ -68,11 +68,11 @@ modules/users/fields.check.php:141-143
         if (function_exists($row_f['func_callback'])) {
             if (!call_user_func($row_f['func_callback'], $value)) {
 
-    └─ $row_f['func_callback'] được sử dụng trực tiếp làm callable
-       cho call_user_func()
-
-
+    └─ $row_f['func_callback'] được sử dụng trực tiếp
+       làm callable cho call_user_func()
 ```
+
+
 ![](/blog/assets/field.png)
 
 
@@ -84,7 +84,6 @@ modules/users/admin/fields.php:372-390
 
     └─ func_callback được lưu vào {prefix}_users_field
        khi tạo mới custom field (fid=0)
-
 ```
 
 ![](/blog/assets/field2.png)
@@ -92,7 +91,9 @@ modules/users/admin/fields.php:372-390
 
 
 ```text
+        │
         ▼
+
 [Source — Admin cấu hình callback]
 modules/users/admin/fields.php:231-237
 
