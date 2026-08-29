@@ -89,6 +89,8 @@ modules/users/admin/fields.php:372-390
 
 ![](/blog/assets/field2.png)
         │
+
+
 ```text        ▼
 [Source — Admin cấu hình callback]
 modules/users/admin/fields.php:231-237
@@ -101,6 +103,7 @@ modules/users/admin/fields.php:231-237
     └─ match_callback → func_callback
     └─ Chỉ kiểm tra function_exists()
     └─ Không có allowlist
+
 
 ```
 
