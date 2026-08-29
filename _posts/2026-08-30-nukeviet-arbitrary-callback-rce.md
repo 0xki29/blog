@@ -71,7 +71,7 @@ modules/users/fields.check.php:141-143
     └─ $row_f['func_callback'] được sử dụng trực tiếp làm callable
        cho call_user_func()
 
-[ĐẶT HÌNH #1 — fields.check.php:141-143]
+![](/blog/assets/field.png)
 ```
 
 Từ sink, trace ngược `$row_f['func_callback']` về nơi cấu hình:
