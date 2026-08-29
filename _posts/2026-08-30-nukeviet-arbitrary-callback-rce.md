@@ -1,6 +1,6 @@
 ---
 layout: post
-title: "F-001: Arbitrary PHP Function Call qua trường tùy chỉnh func_callback (NukeViet - module Users)"
+title: "Arbitrary PHP Function Call dẫn tới RCE (NukeViet - `https://nukeviet.vn/`)"
 date: 2026-08-30 00:00:00 +0700
 categories: [Security, PHP, RCE]
 ---
