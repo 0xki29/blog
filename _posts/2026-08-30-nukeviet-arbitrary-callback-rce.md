@@ -91,7 +91,7 @@ modules/users/admin/fields.php:372-390
         │
 
 
-```text        ▼
+```text        
 [Source — Admin cấu hình callback]
 modules/users/admin/fields.php:231-237
 
