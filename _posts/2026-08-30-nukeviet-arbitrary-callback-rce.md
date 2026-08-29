@@ -187,7 +187,7 @@ save=1&fid=0&system=0&title=PoC+RCE&description=PoC&required=0&show_register=1&u
 | `match_callback` | `system`     | Tên hàm PHP được lưu vào `func_callback`. Đây là hàm có khả năng thực thi lệnh hệ thống khi được gọi thông qua cơ chế callback.                                            |
 
 
-Response mong đợi: `302 Found` redirect về trang danh sách field (`fields.php:466`) — nghĩa là INSERT thành công.
+Response mong đợi: `302 Found` redirect về trang danh sách field (`fields.php`) — nghĩa là INSERT thành công.
 
 **Lưu ý quan trọng khi tái tạo:** nếu bấm "Sửa" một field có sẵn thay vì "Thêm trường mới" (`fid` khác 0), server sẽ **ghi đè** `field_type` từ DB (`fields.php:194-204`):
 
@@ -196,7 +196,7 @@ $dataform['field_type'] = $dataform_old['field_type'];       // lấy từ DB, k
 $dataform['field'] = $dataform['fieldid'] = $dataform_old['field'];
 ```
 
-Nếu field cũ vốn là kiểu "lựa chọn" (dropdown/checkbox), code sẽ ép cứng `match_type='none'`, `func_callback=''` (`fields.php:317-319`) — dù request có gửi `match_type=callback` cũng bị xoá âm thầm trước khi ghi DB. Request vẫn trả `302` bình thường nên dễ nhầm là đã thành công. Bắt buộc phải tạo field mới (`fid=0`) từ đầu, không thể "biến hình" field có sẵn.
+Nếu field cũ vốn là kiểu "lựa chọn" (dropdown/checkbox), code sẽ ép cứng `match_type='none'`, `func_callback=''` (`fields.php`) — dù request có gửi `match_type=callback` cũng bị xoá âm thầm trước khi ghi DB. Request vẫn trả `302` bình thường nên dễ nhầm là đã thành công. Bắt buộc phải tạo field mới (`fid=0`) từ đầu, không thể "biến hình" field có sẵn.
 
 ## [](#header-5) Khai thác — Giai đoạn 2: Kích hoạt sink
 
@@ -222,10 +222,6 @@ uid=33(www-data) gid=33(www-data) groups=33(www-data){"status":...}
 
 Đây chính là bằng chứng RCE.
 
-**Lưu ý khi lặp lại:**
-- `username`/`email` trùng lần đăng ký trước sẽ bị chặn sớm ở `nv_check_username_reg`/`nv_check_email_reg` (`register.php:234,242`) trước khi chạm sink — cần đổi giá trị mỗi lần test.
-- Ký tự `[`/`]` trong lệnh shell bị NukeViet mã hoá thành `&#91;`/`&#93;` trước khi lưu (`Request.php:1041`) — tránh dùng nếu không cần thiết.
-
 ## [](#header-6) Impact tổng hợp
 
 - **Remote Code Execution** dưới quyền tiến trình web server, kích hoạt lặp lại vô hạn lần bởi bất kỳ ai truy cập trang đăng ký công khai.
@@ -233,28 +229,7 @@ uid=33(www-data) gid=33(www-data) groups=33(www-data){"status":...}
 - **Persistence**: bẫy tồn tại vĩnh viễn trong DB cho tới khi bị phát hiện và xoá thủ công — không để lại dấu vết bất thường nào trong luồng vận hành bình thường của admin panel.
 - Cùng sink còn bị kích hoạt qua luồng sửa hồ sơ (`editinfo.php`) và admin tạo user hộ (`user_add.php`), mở rộng bề mặt tấn công.
 
-## [](#header-7) Khắc phục
-
-Tại `modules/users/admin/fields.php:231-236`, thay cơ chế `function_exists()` bằng **allowlist cứng**:
-
-```php
-$allowed_callbacks = [
-    'nv_check_valid_email',
-    'nv_check_valid_login',
-    // ... chỉ các validator nội bộ đã được rà soát
-];
-$dataform['func_callback'] = ($dataform['match_type'] == 'callback')
-    ? $nv_Request->get_string('match_callback', 'post', '', false)
-    : '';
-if (!in_array($dataform['func_callback'], $allowed_callbacks, true)) {
-    $dataform['func_callback'] = '';
-}
-```
-
-Về lâu dài, nên cân nhắc bỏ hẳn kiểu `match_type=callback` nếu tính năng không thực sự cần thiết cho vận hành — đây là mẫu thiết kế "chấp nhận cấu hình admin làm code" (admin-configurable code execution), rủi ro cố hữu ngay cả khi có allowlist, vì bất kỳ hàm nào lọt qua allowlist trong tương lai (do thêm nhầm, do refactor) đều khôi phục lại toàn bộ lỗ hổng.
 
 ## [](#header-8) Kết luận
 
 Lỗ hổng này là một ví dụ điển hình của **CWE-749 (Exposed Dangerous Method or Function)**: một tính năng hợp pháp (cho phép admin định nghĩa validator tuỳ chỉnh) bị lạm dụng vì thiếu allowlist ở lớp kiểm tra đầu vào. Điểm đáng chú ý là chuỗi khai thác đòi hỏi hai vai trò khác nhau — admin module để "gài bẫy" và bất kỳ ai để "kích nổ" — khiến bug dễ bị đánh giá thấp mức độ nghiêm trọng nếu chỉ nhìn riêng lẻ từng bước mà không truy vết toàn bộ luồng source-to-sink.
-
-*(Ảnh minh họa sẽ được bổ sung sau.)*
