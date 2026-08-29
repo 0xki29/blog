@@ -178,13 +178,14 @@ Admin tạo field mới (`fid=0`, **không phải sửa field có sẵn**) với
 save=1&fid=0&system=0&title=PoC+RCE&description=PoC&required=0&show_register=1&user_editable=1&show_profile=1&class=&field_type=textbox&field=nv_poc_rce&match_type=callback&match_callback=system&min_length=0&max_length=100&default_value=
 ```
 
-| Tham số | Giá trị | Vì sao |
-|---|---|---|
-| `fid` | `0` | **Bắt buộc**. Khác 0 → server coi đây là request SỬA field có sẵn và ghi đè `field`/`field_type` từ DB, bỏ qua ý định của payload |
-| `field` | `nv_poc_rce` | Tên field mới. Server đọc tham số `field` để đặt tên, không phải `fieldid` |
-| `field_type` | `textbox` | Bắt buộc để nhánh `match_type=callback` được xử lý |
-| `match_type` | `callback` | Kích hoạt việc lưu `func_callback` |
-| `match_callback` | `system` | Hàm PHP nguy hiểm — có thể đổi thành `exec`, `passthru`, `shell_exec` |
+| Tham số          | Giá trị      | Vì sao                                                                                                                                                                     |
+| ---------------- | ------------ | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `fid`            | `0`          | **Bắt buộc.** `fid = 0` cho biết đây là request **tạo field mới**. Nếu khác `0`, server coi đây là request **sửa field đã tồn tại** và lấy lại `field`/`field_type` từ DB. |
+| `field`          | `nv_poc_rce` | Tên của field mới. Server đọc trực tiếp tham số `field` để đặt tên field, **không phải `fieldid`**.                                                                        |
+| `field_type`     | `textbox`    | Loại field. Được gửi cùng request để server xử lý cấu hình field.                                                                                                          |
+| `match_type`     | `callback`   | Kích hoạt nhánh `callback`, từ đó server lưu giá trị `match_callback` vào `func_callback`.                                                                                 |
+| `match_callback` | `system`     | Tên hàm PHP được lưu vào `func_callback`. Đây là hàm có khả năng thực thi lệnh hệ thống khi được gọi thông qua cơ chế callback.                                            |
+
 
 Response mong đợi: `302 Found` redirect về trang danh sách field (`fields.php:466`) — nghĩa là INSERT thành công.
 
