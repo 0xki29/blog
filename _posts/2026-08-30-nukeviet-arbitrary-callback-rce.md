@@ -74,6 +74,8 @@ modules/users/fields.check.php:141-143
 
 ```
 ![](/blog/assets/field.png)
+
+
 Từ sink, trace ngược `$row_f['func_callback']` về nơi cấu hình:
 
 ```text
@@ -83,9 +85,11 @@ modules/users/admin/fields.php:372-390
     └─ func_callback được lưu vào {prefix}_users_field
        khi tạo mới custom field (fid=0)
 
-[ĐẶT HÌNH #2 — fields.php:372-390]
+```
+
+![](/blog/assets/field2.png)
         │
-        ▼
+```text        ▼
 [Source — Admin cấu hình callback]
 modules/users/admin/fields.php:231-237
 
@@ -98,8 +102,9 @@ modules/users/admin/fields.php:231-237
     └─ Chỉ kiểm tra function_exists()
     └─ Không có allowlist
 
-[ĐẶT HÌNH #3 — fields.php:231-237]
 ```
+
+![](/blog/assets/field1.png)
 
 Execution path để kích hoạt sink:
 
