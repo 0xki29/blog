@@ -23,7 +23,7 @@ Bug xảy ra qua **2 giai đoạn**, cần phân biệt rõ ai làm gì:
 
 ```
 [Giai đoạn 1 — 1 lần, cần admin]
-Admin → POST /admin/...&op=fields  (tạo field, func_callback = "system")
+Admin → POST /admin/index.php?nv=users&op=fields  (tạo field, func_callback = "system")
                                           │
                                           ▼
                           DB: users_field.func_callback = "system"
