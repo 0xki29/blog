@@ -156,8 +156,6 @@ Ngoài registration, cùng sink còn được sử dụng qua:
 
 ```text
 modules/users/funcs/editinfo.php
-modules/users/funcs/editinfo.php
-modules/users/funcs/editinfo.php
 modules/users/admin/user_add.php
 ```
 
