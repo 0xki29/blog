@@ -8,7 +8,7 @@ categories: [Security, PHP, RCE]
 > Tài liệu này mô tả một lỗ hổng Remote Code Execution (RCE) được phát hiện trong Module của NukeViet CMS, khai thác qua cơ chế `match_type=callback` trên trường dữ liệu tùy chỉnh (custom field). Mọi thử nghiệm được thực hiện trên môi trường lab/local do chính người viết triển khai — không nhắm vào hệ thống production của bên thứ ba.
 
 
-## [](#header-0) Bug này hoạt động thế nào — giải thích không thuật ngữ
+## [](#header-0) Bug này hoạt động thế nào
 
 Module Users cho admin tạo **"trường dữ liệu tùy chỉnh"** khi đăng ký (ví dụ: thêm ô "Số CMND"). Với mỗi trường, admin chọn cách kiểm tra dữ liệu người dùng nhập, gọi là `match_type`. Có một kiểu là **`callback`**: admin gõ **tên một hàm PHP** vào ô cấu hình, hệ thống sẽ gọi hàm đó để kiểm tra giá trị người dùng nhập.
 
