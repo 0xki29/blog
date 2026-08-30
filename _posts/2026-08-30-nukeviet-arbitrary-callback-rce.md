@@ -259,3 +259,14 @@ uid=33(www-data) gid=33(www-data) groups=33(www-data){"status":...}
 ## [](#header-8) Kết luận
 
 Lỗ hổng này là một ví dụ điển hình của **CWE-749 (Exposed Dangerous Method or Function)**: một tính năng hợp pháp (cho phép admin định nghĩa validator tuỳ chỉnh) bị lạm dụng vì thiếu allowlist ở lớp kiểm tra đầu vào. Điểm đáng chú ý là chuỗi khai thác đòi hỏi hai vai trò khác nhau — admin module để "gài bẫy" và bất kỳ ai để "kích nổ" — khiến bug dễ bị đánh giá thấp mức độ nghiêm trọng nếu chỉ nhìn riêng lẻ từng bước mà không truy vết toàn bộ luồng source-to-sink.
+
+## 🔗 PoC & Source Code
+
+PoC được xây dựng để tái hiện lỗ hổng trên môi trường **Lab/Authorized Pentest**, bao gồm script tự động đăng nhập, tạo custom field và kích hoạt callback.
+
+* **Repository:** [NukeViet-RCE-PoC](https://github.com/0xki29/NukeViet-RCE-PoC?utm_source=chatgpt.com)
+* **Exploit:** `exploit.py`
+* **Affected version:** NukeViet `<= 4.5.09`
+
+> ⚠️ Chỉ sử dụng PoC trên hệ thống thuộc quyền sở hữu hoặc được cấp phép kiểm thử.
+
