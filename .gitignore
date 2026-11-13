@@ -9,3 +9,5 @@ design-preview/
 microweber_hunting/
 # embargoed drafts — move to _posts/ only on release day (see RELEASE-CHECKLIST)
 drafts/
+# embargo tooling — local only, never push (would leak the disclosure pipeline)
+tools/release-microweber.ps1

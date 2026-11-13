@@ -63,6 +63,45 @@ const head = `<!DOCTYPE html>
 
 const intro = `<div id="intro" aria-hidden="true"><div class="stage"><div class="corner tl"></div><div class="corner tr"></div><div class="corner bl"></div><div class="corner br"></div><svg class="locksvg" id="locksvg" viewBox="0 0 120 150" fill="none" aria-hidden="true"><g class="lockg"><path class="shackle" d="M42 62 V40 a18 18 0 0 1 36 0 V62"/><rect class="lockbody" x="30" y="58" width="60" height="64" rx="9"/><rect class="chamber" x="34" y="66" width="8" height="30" rx="2"/><rect class="chamber" x="45" y="66" width="8" height="30" rx="2"/><rect class="chamber" x="56" y="66" width="8" height="30" rx="2"/><rect class="chamber" x="67" y="66" width="8" height="30" rx="2"/><rect class="chamber" x="78" y="66" width="8" height="30" rx="2"/><rect class="pin" x="34" y="88" width="8" height="7" rx="2"/><rect class="pin" x="45" y="88" width="8" height="7" rx="2"/><rect class="pin" x="56" y="88" width="8" height="7" rx="2"/><rect class="pin" x="67" y="88" width="8" height="7" rx="2"/><rect class="pin" x="78" y="88" width="8" height="7" rx="2"/><rect class="keyway" x="54" y="101" width="12" height="15" rx="3"/></g></svg><div class="log" id="intro-log"></div><div class="bar"><i id="intro-fill"></i></div><div class="granted" id="intro-granted"></div></div><div class="flash" id="intro-flash"></div></div>`;
 
+/* --- simulate Jekyll server-side pieces: related posts + prev/next nav ---
+   (reads the real _posts/ front matter, same scoring as the Liquid template) */
+const postsDir = path.join(root, '_posts');
+const posts = [];
+if (fs.existsSync(postsDir)) {
+  fs.readdirSync(postsDir).filter(f => f.endsWith('.md')).forEach(f => {
+    const t = fs.readFileSync(path.join(postsDir, f), 'utf8');
+    const m2 = t.match(/^---\r?\n([\s\S]*?)\r?\n---/);
+    if (!m2) return;
+    const mm = {};
+    m2[1].split(/\r?\n/).forEach(l => {
+      const x = l.match(/^(\w[\w-]*):\s*"?(.*?)"?\s*(?:#.*)?$/);
+      if (x) mm[x[1]] = x[2];
+    });
+    posts.push({
+      file: f,
+      date: mm.date || '',
+      title: mm.title || f,
+      tags: (mm.tags || '').replace(/[\[\]]/g, '').split(',').map(s => s.trim()).filter(Boolean)
+    });
+  });
+}
+posts.sort((a, b) => (a.date < b.date ? -1 : 1));            /* oldest -> newest */
+const slug = f => f.replace(/^\d{4}-\d{2}-\d{2}-/, '').replace(/\.md$/, '');
+let related = posts.filter(p => p.tags.some(t => tags.indexOf(t) !== -1));   /* shared tags first */
+const fillers = posts.slice().reverse().filter(p => related.indexOf(p) === -1);
+while (related.length < 3 && fillers.length) related.push(fillers.shift());  /* newest fill */
+related = related.slice(0, 3);
+const relHtml = related.length ? `
+  <section class="related">
+    <div class="sec-title">// related reports</div>
+    <div class="cards">
+    ${related.map(r => '      <a class="card hud" href="/blog/' + slug(r.file) + '"><div class="card-meta"><span>' + (r.date || '').split(' ')[0] + '</span></div><h3>' + r.title + '</h3><span class="card-read">open report &rarr;</span></a>').join('\n')}
+    </div>
+  </section>` : '';
+const prevPost = posts[posts.length - 1];                     /* newest existing = "previous" */
+const prevHtml = prevPost ? `
+  <nav class="post-nav"><a class="prev" href="/blog/${slug(prevPost.file)}">&larr; ${prevPost.title.slice(0, 44)}</a></nav>` : '';
+
 const page = `${head}
 <body>
 <a class="skip" href="#main_content">[ skip to content ]</a>
@@ -103,7 +142,8 @@ ${html}
       <button class="cite-copy" type="button">copy</button>
     </div>
   </div>
-  <p style="font-family:var(--mono);font-size:12px;color:var(--muted);margin-top:40px;border:1px dashed var(--line);border-radius:10px;padding:12px 16px">[ preview mode ] related-posts renders server-side (Jekyll) and appears on production. TOC / lightbox / code-copy / intro / back-to-top are the real production JS.</p>
+${relHtml}${prevHtml}
+  <p style="font-family:var(--mono);font-size:12px;color:var(--muted);margin-top:40px;border:1px dashed var(--line);border-radius:10px;padding:12px 16px">[ preview mode ] everything above is the real production markup - related posts and prev/next are simulated from the live _posts directory. Search (/) needs the Jekyll-built search.json and only works on production.</p>
 </article>
 </main>
 <footer>
