@@ -214,9 +214,11 @@ html.js .reveal.on{opacity:1;transform:none}
 /* --- reading progress --- */
 #rprogress{position:fixed;top:0;left:0;height:2px;width:0;background:var(--cyan);box-shadow:0 0 10px var(--cyan);z-index:80;pointer-events:none}
 
-/* --- 2s intro overlay (shown by JS only; never blocks no-JS/repeat visits) --- */
-#intro{position:fixed;inset:0;z-index:100;background:var(--bg);display:none;align-items:center;justify-content:center;transition:transform .65s cubic-bezier(.7,0,.25,1);will-change:transform}
-#intro.show{display:flex}
+/* --- intro overlay: visible from FIRST paint (CSS default) to kill the flash;
+     hidden synchronously by inline head script for repeat visits / reduced
+     motion (html.no-intro) and by <noscript> for no-JS visitors --- */
+#intro{position:fixed;inset:0;z-index:100;background:var(--bg);display:flex;align-items:center;justify-content:center;transition:transform .65s cubic-bezier(.7,0,.25,1);will-change:transform}
+html.no-intro #intro{display:none}
 #intro.out{transform:translateY(-101%)}
 body.locked{overflow:hidden}
 .site{transition:transform .8s cubic-bezier(.16,1,.3,1),opacity .8s}

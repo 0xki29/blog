@@ -107,6 +107,7 @@ document.documentElement.classList.add('js');
   }
 
   if (!reduceMotion && !seen) runIntro();
+  else { var introEl = $('#intro'); if (introEl) introEl.style.display = 'none'; }
 
   /* ---------- home: ops console typing ---------- */
   var term = $('#ops-term');
