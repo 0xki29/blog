@@ -1,0 +1,7 @@
+# local build artifacts (GitHub Pages builds from source on push)
+_site/
+.jekyll-cache/
+.jekyll-metadata
+tools/node_modules/
+# local design exploration — keep out of the public repo
+design-preview/

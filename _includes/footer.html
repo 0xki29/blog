@@ -1,9 +1,4 @@
 <footer>
-  <a href="https://creativecommons.org/licenses/by-nc/3.0/deed.en_US">
-    <span>
-        <b>{{ site.owner}}</b>
-    </span>
-    {% capture currentyear %}{{ 'now' | date: "%Y" }}{% endcapture %}
-    <span>© {{ currentyear }}</span>
-  </a>
+  <div class="foot-line">© {% capture currentyear %}{{ 'now' | date: "%Y" }}{% endcapture %}{{ currentyear }} <b>{{ site.owner }}</b> · security researcher</div>
+  <div class="foot-sub">every finding responsibly disclosed · <span class="sig">red is reserved for threats</span>{% if site.social_links.github %} · <a href="{{ site.social_links.github }}" rel="me noopener noreferrer">github</a>{% endif %}</div>
 </footer>

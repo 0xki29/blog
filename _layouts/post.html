@@ -1,9 +1,90 @@
 ---
 layout: default
 ---
+{% assign words = content | strip_html | number_of_words %}
+{% assign mins = words | divided_by: 200 | at_least: 1 %}
+<article class="post">
+  <div class="post-meta">
+    <time datetime="{{ page.date | date_to_xmlschema }}">{{ page.date | date: "%Y-%m-%d" }}</time>
+    <span>· {{ mins }} min read</span>
+    {% if page.updated %}<span class="updated">· updated {{ page.updated | date: "%Y-%m-%d" }}</span>{% endif %}
+    {% assign shown = page.tags %}{% if shown.size == 0 %}{% assign shown = page.categories %}{% endif %}
+    {% for t in shown %}<a class="tag" href="{{ '/tags' | prepend: site.baseurl | replace: '//','/' }}#{{ t | slugify }}">{{ t }}</a>{% endfor %}
+  </div>
+  <h1 class="post-title">{{ page.title }}</h1>
+  {% if page.changelog %}
+  <details class="changelog">
+    <summary>changelog</summary>
+    <ul>{% for c in page.changelog %}<li>{{ c | escape }}</li>{% endfor %}</ul>
+  </details>
+  {% endif %}
+  {% include series-nav.html %}
+  <div class="post-body">
+    {{ content }}
+  </div>
 
-<article>
-  <h2>{{ page.title }}</h2>
-  <time datetime="{{ page.date | date_to_xmlschema }}" class="by-line">{{ page.date | date_to_string }}</time>
-  {{ content }}
+  <div class="cite-wrap">
+    <button class="cite-btn" type="button" aria-expanded="false" aria-controls="cite-pop">[ cite ]</button>
+    <div class="cite-pop" id="cite-pop" hidden>
+      <div class="cite-tabs">
+        <button class="cite-tab on" type="button" data-tab="bibtex">bibtex</button>
+        <button class="cite-tab" type="button" data-tab="plain">plain text</button>
+      </div>
+      <pre class="cite-code" id="cite-bibtex">@misc{ki29{{ page.date | date: '%Y' }}{{ page.title | slugify | remove: '-' | truncate: 18 }},
+  author = {0xki29},
+  title  = {{ page.title | jsonify }},
+  year   = {{ page.date | date: '%Y' }},
+  url    = {{ page.url | absolute_url | jsonify }}
+}</pre>
+      <pre class="cite-code" id="cite-plain" hidden>0xki29. "{{ page.title }}." 0xki29 - security research, {{ page.date | date: '%Y' }}. {{ page.url | absolute_url }} (accessed [DATE]).</pre>
+      <button class="cite-copy" type="button">copy</button>
+    </div>
+  </div>
+
+  {% comment %}U-08 related: shared tags/categories first, then newest fill up to 3{% endcomment %}
+  {% assign related = "" | split: "" %}
+  {% for cand in site.posts %}
+    {% if cand.url == page.url %}{% continue %}{% endif %}
+    {% assign share = 0 %}
+    {% for t in page.tags %}{% if cand.tags contains t %}{% assign share = share | plus: 1 %}{% endif %}{% endfor %}
+    {% for c in page.categories %}{% if cand.categories contains c %}{% assign share = share | plus: 1 %}{% endif %}{% endfor %}
+    {% if share > 0 %}{% assign related = related | push: cand %}{% endif %}
+  {% endfor %}
+  {% if related.size < 3 %}
+    {% assign need = 3 | minus: related.size %}
+    {% assign fill = "" | split: "" %}
+    {% for cand in site.posts %}
+      {% if cand.url == page.url %}{% continue %}{% endif %}
+      {% assign dup = false %}
+      {% for r in related %}{% if r.url == cand.url %}{% assign dup = true %}{% endif %}{% endfor %}
+      {% unless dup %}{% assign fill = fill | push: cand %}{% endunless %}
+    {% endfor %}
+    {% assign fill = fill | slice: 0, need %}
+    {% assign related = related | concat: fill %}
+  {% endif %}
+  {% if related.size > 0 %}
+  <section class="related">
+    <div class="sec-title">// related reports</div>
+    <div class="cards">
+      {% for r in related %}
+      <a class="card hud" href="{{ r.url | prepend: site.baseurl | replace: '//','/' }}">
+        <div class="card-meta"><span>{{ r.date | date: "%Y-%m-%d" }}</span></div>
+        <h3>{{ r.title }}</h3>
+        <span class="card-read">open report →</span>
+      </a>
+      {% endfor %}
+    </div>
+  </section>
+  {% endif %}
+
+  <nav class="post-nav">
+    {% if page.previous %}
+    <a class="prev" href="{{ page.previous.url | prepend: site.baseurl | replace: '//','/' }}">← {{ page.previous.title | truncate: 44 }}</a>
+    {% endif %}
+    {% if page.next %}
+    <a class="next" href="{{ page.next.url | prepend: site.baseurl | replace: '//','/' }}">{{ page.next.title | truncate: 44 }} →</a>
+    {% endif %}
+  </nav>
+
+  {% if site.giscus.repo and page.comments != false %}{% include giscus.html %}{% endif %}
 </article>

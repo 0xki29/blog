@@ -2,7 +2,7 @@
 #   Site Configuration
 # ===============================
 title: 0xki29
-description: "A Jekyll Blog Theme For Hackers"
+description: "Security research write-ups — web exploitation, CVE root-cause analysis, malware internals. All findings responsibly disclosed."
 author:
   name: "0xki29"
   url: "https://0xki29.github.io"
@@ -27,6 +27,13 @@ defaults:
       type: "posts"
     values:
       layout: "post"
+      image: "https://0xki29.github.io/blog/assets/og/default.png"
+  -
+    scope:
+      path: ""
+      type: "pages"
+    values:
+      image: "https://0xki29.github.io/blog/assets/og/default.png"
 
 future: true
 
@@ -41,9 +48,35 @@ plugins:
 owner: "0xki29"
 year: "2025"
 
+# --- Comments (U-10 giscus) --------------------------------------
+# 1. Enable GitHub Discussions on this repo
+# 2. Install https://giscus.app app, pick a category (e.g. "Announcements" or "General")
+# 3. Fill the 4 values below -> comments box appears on every post
+# 4. Per-post opt-out: add `comments: false` to that post's front matter
+giscus:
+  repo:                # "0xki29/blog"
+  repo-id:             # from giscus.app
+  category:            # "Announcements"
+  category-id:         # from giscus.app
+
+# --- Analytics (U-11 GoatCounter, cookieless) ---------------------
+# Create a free counter at goatcounter.com, then fill `code`
+# (e.g. "0xki29.goatcounter.com"). Leave empty = no analytics at all.
+goatcounter:
+  code:                # "0xki29.goatcounter.com"
+
 # ===============================
 # ===============================
 social_links:
   github: "https://github.com/0xki29"
   linkedin: ""
   twitter: ""
+
+# Do not publish local docs / tooling / design previews
+exclude:
+  - design-preview
+  - Gemfile
+  - Gemfile.lock
+  - tools
+  - upgrade.md
+  - WRITING.md

@@ -1,42 +1,79 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 {% include head.html %}
-
 <body>
-  <div id="wrapper">
-    {% include header.html %}
-    <div class="container">
-      <section id="main_content">
-        {{ content }}
-      </section>
-    </div>
+<a class="skip" href="#main_content">[ skip to content ]</a>
+<div class="bg-glow" aria-hidden="true"></div>
+<div class="bg-orb o1" aria-hidden="true"></div>
+<div class="bg-orb o2" aria-hidden="true"></div>
+<div class="bg-orb o3" aria-hidden="true"></div>
+<div class="bg-grid" aria-hidden="true"></div>
+<div class="scanlines" aria-hidden="true"></div>
+<div class="sweep" aria-hidden="true"></div>
+<div id="intro" aria-hidden="true">
+  <div class="stage">
+    <div class="corner tl"></div><div class="corner tr"></div><div class="corner bl"></div><div class="corner br"></div>
+    <svg class="locksvg" id="locksvg" viewBox="0 0 120 150" fill="none" aria-hidden="true">
+      <g class="lockg">
+        <path class="shackle" d="M42 62 V40 a18 18 0 0 1 36 0 V62"/>
+        <rect class="lockbody" x="30" y="58" width="60" height="64" rx="9"/>
+        <rect class="chamber" x="34" y="66" width="8" height="30" rx="2"/>
+        <rect class="chamber" x="45" y="66" width="8" height="30" rx="2"/>
+        <rect class="chamber" x="56" y="66" width="8" height="30" rx="2"/>
+        <rect class="chamber" x="67" y="66" width="8" height="30" rx="2"/>
+        <rect class="chamber" x="78" y="66" width="8" height="30" rx="2"/>
+        <rect class="pin" x="34" y="88" width="8" height="7" rx="2"/>
+        <rect class="pin" x="45" y="88" width="8" height="7" rx="2"/>
+        <rect class="pin" x="56" y="88" width="8" height="7" rx="2"/>
+        <rect class="pin" x="67" y="88" width="8" height="7" rx="2"/>
+        <rect class="pin" x="78" y="88" width="8" height="7" rx="2"/>
+        <rect class="keyway" x="54" y="101" width="12" height="15" rx="3"/>
+      </g>
+    </svg>
+    <div class="log" id="intro-log"></div>
+    <div class="bar"><i id="intro-fill"></i></div>
+    <div class="granted" id="intro-granted"></div>
   </div>
+  <div class="flash" id="intro-flash"></div>
+</div>
+<div id="rprogress" aria-hidden="true"></div>
+<div class="site">
+  {% include header.html %}
+  <main class="container" id="main_content" tabindex="-1">{{ content }}</main>
 
   {% if paginator.total_pages > 1 %}
-  <div class="pagination">
+  <nav class="pagination" aria-label="Pages">
     {% if paginator.previous_page == 1 %}
     <a href="{{ '/' | prepend: site.baseurl | replace: '//', '/' }}" class="page-item">&laquo;</a>
-    {% elsif paginator.previous_page%}
+    {% elsif paginator.previous_page %}
     <a href="{{ paginator.previous_page_path | prepend: site.baseurl | replace: '//', '/' }}" class="page-item">&laquo;</a>
     {% else %}
     <span class="page-item">&laquo;</span>
-    {% endif %} {% for page in (1..paginator.total_pages) %} {% if page == paginator.page %}
-    <span class="page-item">{{ page }}</span>
-    {% elsif page == 1 %}
-    <a href="{{ '/' | prepend: site.baseurl | replace: '//', '/' }}" class="page-item">{{ page }}</a>
-    {% else %}
-    <a href="{{ site.paginate_path | prepend: site.baseurl | replace: '//', '/' | replace: ':num', page }}" class="page-item">{{ page }}</a>
-    {% endif %} {% endfor %} {% if paginator.next_page %}
+    {% endif %}
+    {% for page in (1..paginator.total_pages) %}
+      {% if page == paginator.page %}
+      <span class="page-item">{{ page }}</span>
+      {% elsif page == 1 %}
+      <a href="{{ '/' | prepend: site.baseurl | replace: '//', '/' }}" class="page-item">{{ page }}</a>
+      {% else %}
+      <a href="{{ site.paginate_path | prepend: site.baseurl | replace: '//', '/' | replace: ':num', page }}" class="page-item">{{ page }}</a>
+      {% endif %}
+    {% endfor %}
+    {% if paginator.next_page %}
     <a href="{{ paginator.next_page_path | prepend: site.baseurl | replace: '//', '/' }}" class="page-item">&raquo;</a>
     {% else %}
     <span class="page-item">&raquo;</span>
     {% endif %}
-  </div>
-  {% endif %} {% include footer.html %}
-
-  {% if site.google_analytics %}
-    {% include analytics.html %}
+  </nav>
   {% endif %}
-</body>
 
+  {% include footer.html %}
+</div>
+<button id="totop" type="button" aria-label="Back to top">▲ top</button>
+<script src="{{ '/js/main.js' | prepend: site.baseurl | replace: '//','/' }}" defer></script>
+
+{% if site.goatcounter.code %}
+  {% include analytics.html %}
+{% endif %}
+</body>
 </html>

@@ -1,0 +1,103 @@
+---
+layout: default
+---
+
+<svg class="gear gear-a" viewBox="-100 -100 200 200" aria-hidden="true">
+  <g class="rot cw">
+    <g class="teeth">
+      <rect x="-7" y="-68" width="14" height="20" rx="3"/>
+      <rect x="-7" y="-68" width="14" height="20" rx="3" transform="rotate(30)"/>
+      <rect x="-7" y="-68" width="14" height="20" rx="3" transform="rotate(60)"/>
+      <rect x="-7" y="-68" width="14" height="20" rx="3" transform="rotate(90)"/>
+      <rect x="-7" y="-68" width="14" height="20" rx="3" transform="rotate(120)"/>
+      <rect x="-7" y="-68" width="14" height="20" rx="3" transform="rotate(150)"/>
+      <rect x="-7" y="-68" width="14" height="20" rx="3" transform="rotate(180)"/>
+      <rect x="-7" y="-68" width="14" height="20" rx="3" transform="rotate(210)"/>
+      <rect x="-7" y="-68" width="14" height="20" rx="3" transform="rotate(240)"/>
+      <rect x="-7" y="-68" width="14" height="20" rx="3" transform="rotate(270)"/>
+      <rect x="-7" y="-68" width="14" height="20" rx="3" transform="rotate(300)"/>
+      <rect x="-7" y="-68" width="14" height="20" rx="3" transform="rotate(330)"/>
+    </g>
+    <circle r="58"/><circle r="34"/><circle r="10"/>
+    <path d="M0 -34 V-10 M0 34 V10 M-34 0 H-10 M34 0 H10"/>
+  </g>
+</svg>
+<svg class="gear gear-b" viewBox="-100 -100 200 200" aria-hidden="true">
+  <g class="rot ccw">
+    <g class="teeth">
+      <rect x="-7" y="-68" width="14" height="20" rx="3"/>
+      <rect x="-7" y="-68" width="14" height="20" rx="3" transform="rotate(30)"/>
+      <rect x="-7" y="-68" width="14" height="20" rx="3" transform="rotate(60)"/>
+      <rect x="-7" y="-68" width="14" height="20" rx="3" transform="rotate(90)"/>
+      <rect x="-7" y="-68" width="14" height="20" rx="3" transform="rotate(120)"/>
+      <rect x="-7" y="-68" width="14" height="20" rx="3" transform="rotate(150)"/>
+      <rect x="-7" y="-68" width="14" height="20" rx="3" transform="rotate(180)"/>
+      <rect x="-7" y="-68" width="14" height="20" rx="3" transform="rotate(210)"/>
+      <rect x="-7" y="-68" width="14" height="20" rx="3" transform="rotate(240)"/>
+      <rect x="-7" y="-68" width="14" height="20" rx="3" transform="rotate(270)"/>
+      <rect x="-7" y="-68" width="14" height="20" rx="3" transform="rotate(300)"/>
+      <rect x="-7" y="-68" width="14" height="20" rx="3" transform="rotate(330)"/>
+    </g>
+    <circle r="58"/><circle r="34"/><circle r="10"/>
+    <path d="M0 -34 V-10 M0 34 V10 M-34 0 H-10 M34 0 H10"/>
+  </g>
+</svg>
+<svg class="gear gear-c" viewBox="-100 -100 200 200" aria-hidden="true">
+  <g class="rot cw">
+    <g class="teeth">
+      <rect x="-7" y="-68" width="14" height="20" rx="3"/>
+      <rect x="-7" y="-68" width="14" height="20" rx="3" transform="rotate(30)"/>
+      <rect x="-7" y="-68" width="14" height="20" rx="3" transform="rotate(60)"/>
+      <rect x="-7" y="-68" width="14" height="20" rx="3" transform="rotate(90)"/>
+      <rect x="-7" y="-68" width="14" height="20" rx="3" transform="rotate(120)"/>
+      <rect x="-7" y="-68" width="14" height="20" rx="3" transform="rotate(150)"/>
+      <rect x="-7" y="-68" width="14" height="20" rx="3" transform="rotate(180)"/>
+      <rect x="-7" y="-68" width="14" height="20" rx="3" transform="rotate(210)"/>
+      <rect x="-7" y="-68" width="14" height="20" rx="3" transform="rotate(240)"/>
+      <rect x="-7" y="-68" width="14" height="20" rx="3" transform="rotate(270)"/>
+      <rect x="-7" y="-68" width="14" height="20" rx="3" transform="rotate(300)"/>
+      <rect x="-7" y="-68" width="14" height="20" rx="3" transform="rotate(330)"/>
+    </g>
+    <circle r="58"/><circle r="34"/><circle r="10"/>
+    <path d="M0 -34 V-10 M0 34 V10 M-34 0 H-10 M34 0 H10"/>
+  </g>
+</svg>
+
+<section class="hero">
+  <div>
+    <div class="eyebrow">Security Researcher · Responsible Disclosure</div>
+    <h1 class="hero-title">Adversary mindset.<br><span class="grad">Analyst precision.</span></h1>
+    <p>Web exploitation, CVE root-cause analysis and malware internals — executed like an operator, documented like an analyst. Every finding goes through responsible disclosure: reproduce, trace, prove, report.</p>
+    <div class="btn-row">
+      <a class="btn btn-primary" href="#reports">[ after_action_reports ]</a>
+      {% if site.social_links.github %}<a class="btn btn-ghost" href="{{ site.social_links.github }}" rel="me noopener">github.com/0xki29</a>{% endif %}
+    </div>
+    <div class="coords">OP-{% capture y %}{{ 'now' | date: "%Y" }}{% endcapture %}{{ y }} · SECTOR VN · CLEARANCE: PUBLIC</div>
+  </div>
+  <div class="term hud">
+    <div class="term-bar"><i></i><i></i><i></i><span class="term-title">0xki29@ops — console</span></div>
+    <div class="term-body" id="ops-term"></div>
+  </div>
+</section>
+
+<section class="section" id="reports">
+  <div class="sec-title">// After-action reports</div>
+  <div class="cards">
+    {% for post in paginator.posts %}
+    {% assign words = post.content | strip_html | number_of_words %}
+    {% assign mins = words | divided_by: 200 | at_least: 1 %}
+    {% assign cve_parts = post.title | split: "CVE-" %}
+    <a class="card hud reveal" href="{{ post.url | prepend: site.baseurl | replace: '//','/' }}">
+      <div class="card-meta">
+        <span>{{ post.date | date: "%Y-%m-%d" }}</span>
+        <span>· {{ mins }} min</span>
+        {% if cve_parts.size > 1 %}{% assign cve_rest = cve_parts[1] | split: " " %}<span class="cve">CVE-{{ cve_rest[0] | remove: ")" | remove: ":" }}</span>{% endif %}
+      </div>
+      <h3>{{ post.title }}</h3>
+      <p>{{ post.content | strip_html | truncatewords: 24 }}</p>
+      <div class="tags">{% assign shown = post.tags %}{% if shown.size == 0 %}{% assign shown = post.categories %}{% endif %}{% for t in shown %}<span class="tag">{{ t }}</span>{% endfor %}</div>
+      <span class="card-read">open report →</span>
+    </a>
+    {% endfor %}
+  </div>
+</section>

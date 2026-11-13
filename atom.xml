@@ -2,7 +2,7 @@
 layout: null
 ---
 <?xml version="1.0" encoding="UTF-8"?>
-<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/">
   <channel>
     <title>{{ site.title | xml_escape }}</title>
     <description>{{ site.description | xml_escape }}</description>
@@ -10,17 +10,18 @@ layout: null
     <atom:link href="{{ site.url }}/feed.xml" rel="self" type="application/rss+xml" />
     <author>
       <name>{{ site.author.name }}</name>
-      <email>{{ site.author.email }}</email>
+      {% if site.author.email %}<email>{{ site.author.email }}</email>{% endif %}
       <uri>{{ site.author.url }}</uri>
     </author>
     {% for post in site.posts limit:10 %}
       <item>
         <title>{{ post.title | xml_escape }}</title>
-        <description>{{ post.content | xml_escape }}</description>
+        <description>{{ post.excerpt | strip_html | truncatewords: 40 | xml_escape }}</description>
+        {% for cat in post.categories %}<category>{{ cat | xml_escape }}</category>{% endfor %}
         <pubDate>{{ post.date | date: "%a, %d %b %Y %H:%M:%S %z" }}</pubDate>
         <link>{{ site.url }}/{{ post.url }}</link>
-        <link href="{{ site.url }}{{ post.url }}"/>
         <guid isPermaLink="true">{{ site.url }}{{ post.url }}</guid>
+        <content:encoded>{{ post.content | xml_escape }}</content:encoded>
       </item>
     {% endfor %}
   </channel>

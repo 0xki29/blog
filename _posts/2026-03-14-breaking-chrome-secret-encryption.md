@@ -3,6 +3,8 @@ layout: post
 title: "Breaking Chrome Secret Encryption on Windows (DPAPI + AES-256-GCM)"
 date: 2026-03-14 10:00:00 +0700
 categories: [Security, Malware, Windows]
+image: "https://0xki29.github.io/blog/assets/og/chrome-secret-encryption.png"
+tags: [windows, chrome, dpapi, aes-gcm, malware]
 ---
 
 ## Background
@@ -896,4 +898,4 @@ The code demonstrates the full attack chain, including:
 
 ## Proof of Concept (Real-World Decryption)
 
-![Short description](/blog/assets/poc.png)
+![Proof-of-concept run decrypting Chrome secrets: plaintext passwords and cookies recovered from Local State and Login Data](/blog/assets/poc.webp)

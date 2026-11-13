@@ -1,0 +1,15 @@
+{% if page.series %}
+{% assign parts = site.posts | where: "series", page.series | sort: "series_order" %}
+{% if parts.size > 1 %}
+<nav class="series-nav" aria-label="Series navigation">
+  <div class="series-head">// series: {{ page.series | replace: '-', ' ' }} &middot; part {{ page.series_order }} of {{ parts.size }}</div>
+  <ol>
+  {% for p in parts %}
+    <li{% if p.url == page.url %} class="cur"{% endif %}>
+      {% if p.url == page.url %}{{ p.title }}{% else %}<a href="{{ p.url | prepend: site.baseurl | replace: '//','/' }}">{{ p.title }}</a>{% endif %}
+    </li>
+  {% endfor %}
+  </ol>
+</nav>
+{% endif %}
+{% endif %}
