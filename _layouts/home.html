@@ -63,6 +63,7 @@ layout: default
   </g>
 </svg>
 
+{% if paginator.page == 1 %}
 <section class="hero">
   <div>
     <div class="eyebrow">Security Researcher · Responsible Disclosure</div>
@@ -79,6 +80,7 @@ layout: default
     <div class="term-body" id="ops-term"></div>
   </div>
 </section>
+{% endif %}
 
 <section class="section" id="reports">
   <div class="sec-title">// After-action reports</div>

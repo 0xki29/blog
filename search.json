@@ -10,7 +10,7 @@ layout: null
   "tags": {{ post.tags | jsonify }},
   "categories": {{ post.categories | jsonify }},
   "excerpt": {{ post.excerpt | strip_html | truncatewords: 40 | jsonify }},
-  "content": {{ post.content | strip_html | strip_newlines | jsonify }}
+  "content": {{ post.content | strip_html | strip_newlines | slice: 0, 8000 | jsonify }}
 }{% unless forloop.last %},{% endunless %}
 {% endfor %}
 ]

@@ -2,6 +2,25 @@
 
 Mọi convention khi viết bài mới cho blog. File này KHÔNG được publish (đã nằm trong `exclude` của `_config.yml`).
 
+## 0. Tạo bài mới (1 lệnh)
+
+```powershell
+powershell tools\new-post.ps1 -Title "SQLi in XYZ CMS" -Tags sqli,web
+# title tiếng Việt thì truyền thêm -Slug "ten-khong-dau"
+```
+
+→ tạo `_posts/YYYY-MM-DD-<slug>.md` với front matter + khung Background/Analysis/Impact/Mitigation.
+Xong content → add ảnh → `tools\optimize-images.ps1` → commit → push. Đó là toàn bộ quy trình.
+
+## 0.1. Scaling notes (đã thiết kế sẵn cho 10–20+ bài)
+
+- Home hiển thị **6 bài/trang** (đổi trong `_config.yml` → `paginate`), hero chỉ render ở trang 1 — `/page/2+` vào thẳng danh sách reports
+- Search index tự cap 8.000 ký tự/bài (`search.json`) — không phình dù bài dài
+- `/tags/` + `/archive/` có filter nên danh sách dài vẫn điều hướng được — **giữ tag chuẩn hoá**: lowercase, kebab-case, tối đa ~4 tag/bài, không tạo tag đồng nghĩa (rce vs remote-code-execution)
+- Related posts tự chạy theo tag — càng nhiều bài càng chính xác
+- Muốn chia bài dài thành nhiều phần: `series: "slug-chuoi"` + `series_order: n` cho từng phần, series-nav tự hiện
+- Khi viết xong cứ push — CI tự kiểm tra build + link hỏng trước khi Pages deploy
+
 ## 1. Front matter chuẩn
 
 ```yaml

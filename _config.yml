@@ -17,7 +17,7 @@ destination: ./_site
 
 # Permalink & pagination
 permalink: /:title
-paginate: 3
+paginate: 6            # 6 cards/page keeps the grid tidy up to ~30 posts
 paginate_path: /page/:num/
 
 defaults:
