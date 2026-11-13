@@ -5,3 +5,7 @@ _site/
 tools/node_modules/
 # local design exploration — keep out of the public repo
 design-preview/
+# local vuln research workspace (huge lab trees — never push to the blog repo)
+microweber_hunting/
+# embargoed drafts — move to _posts/ only on release day (see RELEASE-CHECKLIST)
+drafts/
