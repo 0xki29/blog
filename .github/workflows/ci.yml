@@ -13,7 +13,9 @@ jobs:
 
       - uses: ruby/setup-ruby@v1
         with:
-          bundler-cache: true
+          bundler-cache: false # repo has no committed Gemfile.lock — cache step would fail
+      - name: Install dependencies
+        run: bundle install
 
       - name: Build site
         env:
