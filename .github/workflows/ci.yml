@@ -24,4 +24,10 @@ jobs:
         run: bundle exec jekyll build
 
       - name: HTML check
-        run: bundle exec htmlproofer ./_site --assume-extension --allow-hash-href --disable-external --check-html
+        shell: bash
+        run: |
+          set -o pipefail
+          bundle exec htmlproofer ./_site --assume-extension --allow-hash-href --disable-external --check-html 2>&1 | tee "$GITHUB_STEP_SUMMARY" || {
+            echo "::error::htmlproofer failed — full output above"
+            exit 1
+          }
