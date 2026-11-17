@@ -27,7 +27,8 @@ jobs:
         shell: bash
         run: |
           set -o pipefail
-          bundle exec htmlproofer ./_site --assume-extension --allow-hash-href --disable-external --check-html 2>&1 | tee hp.log | tee "$GITHUB_STEP_SUMMARY" || {
+          # html-proofer v5 dropped --check-html (HTML validation no longer bundled)
+          bundle exec htmlproofer ./_site --assume-extension --allow-hash-href --disable-external 2>&1 | tee hp.log | tee "$GITHUB_STEP_SUMMARY" || {
             echo "--- htmlproofer failures ---" | tee -a "$GITHUB_STEP_SUMMARY"
             grep -E '\S' hp.log | head -10 | sed 's/^/::error title=htmlproofer::/'
             exit 1
