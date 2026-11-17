@@ -10,8 +10,7 @@ tags: [rce, nukeviet, php, cms]
 > Tài liệu này mô tả một lỗ hổng Remote Code Execution (RCE) được phát hiện trong Module của NukeViet CMS, khai thác qua cơ chế `match_type=callback` trên trường dữ liệu tùy chỉnh (custom field). Mọi thử nghiệm được thực hiện trên môi trường lab/local do chính người viết triển khai — không nhắm vào hệ thống production của bên thứ ba.
 
 
-## [](#header-0) Bug này hoạt động thế nào
-
+## Bug này hoạt động thế nào {#header-0}
 Module Users cho admin tạo **"trường dữ liệu tùy chỉnh"** khi đăng ký (ví dụ: thêm ô "Số CMND"). Với mỗi trường, admin chọn cách kiểm tra dữ liệu người dùng nhập, gọi là `match_type`. Có một kiểu là **`callback`**: admin gõ **tên một hàm PHP** vào ô cấu hình, hệ thống sẽ gọi hàm đó để kiểm tra giá trị người dùng nhập.
 
 Ý định thiết kế: admin gõ tên hàm validator do chính họ viết, ví dụ `nv_check_phone_number`. Nhưng hệ thống **chỉ kiểm tra hàm đó có tồn tại hay không** (`function_exists()`), không kiểm tra hàm đó có phải một validator "an toàn" hay không. Mọi hàm PHP có sẵn của ngôn ngữ đều "tồn tại" — kể cả `system`, `exec`, `shell_exec` (các hàm chạy lệnh hệ điều hành).
@@ -45,8 +44,7 @@ Vì sao nghiêm trọng dù bước 1 cần quyền admin?
 - Nếu tài khoản admin module Users đó từng bị lộ (phishing, XSS, dò mật khẩu yếu...), kẻ tấn công có được RCE toàn server mà không cần chiếm GodAdmin.
 - Sau khi gài xong, bẫy **tồn tại vĩnh viễn**, ai cũng kích hoạt được qua trang đăng ký công khai, không cần tài khoản.
 
-## [](#header-1) Tóm tắt
-
+## Tóm tắt {#header-1}
 | Trường | Giá trị |
 |---|---|
 | Mức độ | **High** |
@@ -57,8 +55,7 @@ Vì sao nghiêm trọng dù bước 1 cần quyền admin?
 | File lưu payload | `modules/users/admin/fields.php` |
 | File thực thi payload | `modules/users/fields.check.php` |
 
-## [](#header-2) Sink-to-source
-
+## Sink-to-source {#header-2}
 # Data Flow: `func_callback` → `call_user_func()`
 
 Đã xác minh trên code hiện tại của NukeViet. Luồng dữ liệu được trace theo hướng **Sink → Source** như sau:
@@ -164,15 +161,13 @@ modules/users/admin/user_add.php
 vì các flow này đều `require modules/users/fields.check.php`.
 
 
-## [](#header-3) Điều kiện khai thác
-
+## Điều kiện khai thác {#header-3}
 1. Có tài khoản admin với quyền quản trị module **Users** (không cần GodAdmin/SPAdmin).
 2. `$global_config['allowuserreg']` khác `0` (cho phép đăng ký) — mặc định NukeViet bật (`register.php`).
 3. Đặt `field_type = textbox` khi tạo field — nhánh `match_type=callback` chỉ tồn tại trong `textbox|textarea|editor` (`fields.php`).
 4. Tên field không được trùng cột có sẵn trong bảng `{prefix}_users_info` và không nằm trong blocklist `includes/field_not_allow.php`.
 
-## [](#header-4) Khai thác — Giai đoạn 1: Poison
-
+## Khai thác — Giai đoạn 1: Poison {#header-4}
 Admin tạo field mới (`fid=0`, **không phải sửa field có sẵn**) với payload dạng:
 
 ```http
@@ -217,8 +212,7 @@ $dataform['field'] = $dataform['fieldid'] = $dataform_old['field'];
 
 Nếu field cũ vốn là kiểu "lựa chọn" (dropdown/checkbox), code sẽ ép cứng `match_type='none'`, `func_callback=''` (`fields.php`) — dù request có gửi `match_type=callback` cũng bị xoá âm thầm trước khi ghi DB. Request vẫn trả `302` bình thường nên dễ nhầm là đã thành công. Bắt buộc phải tạo field mới (`fid=0`) từ đầu, không thể "biến hình" field có sẵn.
 
-## [](#header-5) Khai thác — Giai đoạn 2: Trigger
-
+## Khai thác — Giai đoạn 2: Trigger {#header-5}
 Bất kỳ ai — kể cả người dùng chưa có tài khoản — gửi request đăng ký với field vừa bị gài bẫy:
 
 ```
@@ -250,16 +244,14 @@ uid=33(www-data) gid=33(www-data) groups=33(www-data){"status":...}
 
 Đây chính là bằng chứng RCE.
 
-## [](#header-6) Impact tổng hợp
-
+## Impact tổng hợp {#header-6}
 - **Remote Code Execution** dưới quyền tiến trình web server, kích hoạt lặp lại vô hạn lần bởi bất kỳ ai truy cập trang đăng ký công khai.
 - **Privilege escalation**: một tài khoản chỉ có quyền quản trị module Users (không phải GodAdmin) có thể tự nâng quyền lên chạy lệnh hệ thống tuỳ ý.
 - **Persistence**: bẫy tồn tại vĩnh viễn trong DB cho tới khi bị phát hiện và xoá thủ công — không để lại dấu vết bất thường nào trong luồng vận hành bình thường của admin panel.
 - Cùng sink còn bị kích hoạt qua luồng sửa hồ sơ (`editinfo.php`) và admin tạo user hộ (`user_add.php`), mở rộng bề mặt tấn công.
 
 
-## [](#header-8) Kết luận
-
+## Kết luận {#header-8}
 Lỗ hổng này là một ví dụ điển hình của **CWE-749 (Exposed Dangerous Method or Function)**: một tính năng hợp pháp (cho phép admin định nghĩa validator tuỳ chỉnh) bị lạm dụng vì thiếu allowlist ở lớp kiểm tra đầu vào. Điểm đáng chú ý là chuỗi khai thác đòi hỏi hai vai trò khác nhau — admin module để "gài bẫy" và bất kỳ ai để "kích nổ" — khiến bug dễ bị đánh giá thấp mức độ nghiêm trọng nếu chỉ nhìn riêng lẻ từng bước mà không truy vết toàn bộ luồng source-to-sink.
 
 ## 🔗 PoC & Source Code
