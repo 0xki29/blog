@@ -28,7 +28,8 @@ jobs:
         run: |
           set -o pipefail
           # html-proofer v5 dropped --check-html (HTML validation no longer bundled)
-          bundle exec htmlproofer ./_site --assume-extension --allow-hash-href --disable-external 2>&1 | tee hp.log | tee "$GITHUB_STEP_SUMMARY" || {
+          # site uses baseurl /blog → strip it so /blog/* maps to _site/*
+          bundle exec htmlproofer ./_site --assume-extension --allow-hash-href --disable-external --url-swap '/blog:' 2>&1 | tee hp.log | tee "$GITHUB_STEP_SUMMARY" || {
             echo "--- htmlproofer failures ---" | tee -a "$GITHUB_STEP_SUMMARY"
             grep -E '\S' hp.log | head -10 | sed 's/^/::error title=htmlproofer::/'
             exit 1
