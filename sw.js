@@ -4,7 +4,7 @@
    - assets (css/js/img): stale-while-revalidate (instant repeat loads, self-heals)
    - scope: /blog/ (served from repo root on GitHub Pages) */
 
-var VERSION = 'phantom-v1';
+var VERSION = 'phantom-v2'; /* v2: purge caches from the embargoed-post era */
 var ROOT = self.location.pathname.replace(/\/sw\.js$/, ''); /* e.g. /blog */
 
 self.addEventListener('install', function (e) {
