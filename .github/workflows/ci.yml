@@ -13,6 +13,7 @@ jobs:
 
       - uses: ruby/setup-ruby@v1
         with:
+          ruby-version: '3.2'
           bundler-cache: false # repo has no committed Gemfile.lock — cache step would fail
       - name: Install dependencies
         run: bundle install
